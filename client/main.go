@@ -12,8 +12,15 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var mySigningKey = []byte("mysupersecret")
-var serverUrl = "http://localhost:9000/"
+// DB CONST
+var USER_DB 		= "root"
+var PASS_DB 		= "root"
+var IP_DB 			= "127.0.0.1:3306"
+var TABLE_DB 		= "mailing"
+
+// JWT CONST
+var MY_SIGNING_KEY 	= []byte("mysupersecret")
+var SERVER_URL 		= "http://localhost:9000/"
 
 type User struct {
     ID   int    `json:"id"`
@@ -28,7 +35,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/*client := &http.Client{}
-	req, _ := http.NewRequest("GET", serverUrl, nil)
+	req, _ := http.NewRequest("GET", SERVER_URL, nil)
 	req.Header.Set("Token", validToken)
 	res, err := client.Do(req)
 	if err != nil {
@@ -50,10 +57,9 @@ func GenerateJWT() (string, error) {
 
 	claims["authorized"] = true
 	claims["user"] = "Wyllis Monteiro"
-	claims["pass"] = "mdp"
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
-	tokenString, err := token.SignedString(mySigningKey)
+	tokenString, err := token.SignedString(MY_SIGNING_KEY)
 
 	if err != nil {
 		fmt.Errorf("Something went wrong: %s", err.Error())
@@ -71,7 +77,7 @@ func handleRequests() {
 }
 
 func connectToBDD() (*sql.DB, error){
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/mailing")
+	db, err := sql.Open("mysql", USER_DB + ":" + PASS_DB + "@tcp(" + IP_DB + ")/" + TABLE_DB)
 
     if err != nil {
 		return nil, err
@@ -117,6 +123,6 @@ func main() {
 	log.Printf(strconv.Itoa(user.ID))
 	log.Printf(user.Login)
 	log.Printf(user.Password)
-	
+
 	handleRequests()
 }

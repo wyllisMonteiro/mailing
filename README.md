@@ -5,6 +5,13 @@ Technologies used :
 - JWT
 
 ## Set up project
+
+- Go in client folder
+- Go in main.go file
+- Check constants for database connexion
+- Create mailing database
+- Import mailing.sql file in mailing database
+
 **Run client**
 ```sh
 $ cd client
@@ -16,6 +23,8 @@ $ go run main.go
 $ cd server
 $ go run main.go
 ```
+
+
 
 **Use postman**
 - Put GET http://localhost:9000
