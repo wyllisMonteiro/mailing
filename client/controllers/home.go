@@ -3,16 +3,36 @@ package controllers
 import (
 	"fmt"
 	"github.com/wyllisMonteiro/mailing/client/service"
+	"github.com/wyllisMonteiro/mailing/client/repositories"
 	"net/http"
+	"log"
 )
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
+	user, err := repositories.GetOneUser("wyllis")
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	match, err := service.ComparePasswordAndHash("w", user.Password)
+    if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	fmt.Printf("Match: %v\n", match)
+
+	if !match {
+		return
+	}
+
 	validToken, err := service.GenerateJWT()
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
 
-	insertUserToken(validToken, user.ID)
+	repositories.InsertUserToken(validToken, user.ID)
 
 	/*client := &http.Client{}
 	req, _ := http.NewRequest("GET", SERVER_URL, nil)

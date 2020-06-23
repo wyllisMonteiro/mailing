@@ -24,8 +24,6 @@ $ cd server
 $ go run main.go
 ```
 
-
-
 **Use postman**
 - Put GET http://localhost:9000
 - Go in Headers
