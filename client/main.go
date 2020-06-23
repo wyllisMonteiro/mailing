@@ -1,21 +1,22 @@
 package main
 
 import (
-	"log"
-	"fmt"
-	"time"
-	"net/http"
-	"errors"
+	"crypto/rand"
 	"crypto/subtle"
+	"database/sql"
+	"encoding/base64"
+	"errors"
+	"fmt"
+	jwt "github.com/dgrijalva/jwt-go"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/wyllisMonteiro/mailing/client/router"
+	"golang.org/x/crypto/argon2"
+	"log"
+	"net/http"
 	"strings"
+	"time"
 	//"io/ioutil"
 	"strconv"
-	"crypto/rand"
-	"encoding/base64"
-	"database/sql"
-    _ "github.com/go-sql-driver/mysql"
-	jwt "github.com/dgrijalva/jwt-go"
-	"golang.org/x/crypto/argon2"
 )
 
 // DB CONST
@@ -73,31 +74,6 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, validToken)
 	//fmt.Fprintf(w, string(body))
-}
-
-func GenerateJWT() (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-
-	claims["authorized"] = true
-	claims["user"] = "Wyllis Monteiro"
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
-
-	tokenString, err := token.SignedString(MY_SIGNING_KEY)
-
-	if err != nil {
-		fmt.Errorf("Something went wrong: %s", err.Error())
-		return "", err
-	}
-
-	return tokenString, nil
-
-}
-
-func handleRequests() {
-	http.HandleFunc("/", homePage)
-
-	log.Fatal(http.ListenAndServe(":9001", nil))
 }
 
 func connectToBDD() (*sql.DB, error){
@@ -233,40 +209,44 @@ func decodeHash(encodedHash string) (p *params, salt, hash []byte, err error) {
 func main() {
 	fmt.Println("My Simple Client")
 
-	err := getOneUser("wyllis")
+	router.InitRoutes()
 
-	if err != nil {
-		panic(err.Error())
-		return
-	}
-
-	log.Printf(strconv.Itoa(user.ID))
-	log.Printf(user.Login)
-	log.Printf(user.Password)
-
-	/*p := &params{
-        memory:      64 * 1024,
-        iterations:  3,
-        parallelism: 2,
-        saltLength:  16,
-        keyLength:   32,
-    }
-
-    // Pass the plaintext password and parameters to our generateFromPassword
-    // helper function.
-    encodedHash, err := generateFromPassword("w", p)
-    if err != nil {
-        log.Fatal(err)
-	}*/
-
-
-	
-	match, err := comparePasswordAndHash("w", user.Password)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-	fmt.Printf("Match: %v\n", match)
-
-	handleRequests()
+	log.Fatal(http.ListenAndServe(":9001", nil))
+	//
+	//err := getOneUser("wyllis")
+	//
+	//if err != nil {
+	//	panic(err.Error())
+	//	return
+	//}
+	//
+	//log.Printf(strconv.Itoa(user.ID))
+	//log.Printf(user.Login)
+	//log.Printf(user.Password)
+	//
+	///*p := &params{
+    //    memory:      64 * 1024,
+    //    iterations:  3,
+    //    parallelism: 2,
+    //    saltLength:  16,
+    //    keyLength:   32,
+    //}
+	//
+    //// Pass the plaintext password and parameters to our generateFromPassword
+    //// helper function.
+    //encodedHash, err := generateFromPassword("w", p)
+    //if err != nil {
+    //    log.Fatal(err)
+	//}*/
+	//
+	//
+	//
+	//match, err := comparePasswordAndHash("w", user.Password)
+    //if err != nil {
+    //    log.Fatal(err)
+    //}
+	//
+	//fmt.Printf("Match: %v\n", match)
+	//
+	//handleRequests()
 }
