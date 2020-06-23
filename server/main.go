@@ -7,7 +7,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var mySigningKey = []byte("mysupersecretphrase")
+var mySigningKey = []byte("mysupersecret")
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Super Secret Information")

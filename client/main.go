@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 	"net/http"
-	"io/ioutil"
+	//"io/ioutil"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var mySigningKey = []byte("mysupersecretphrase")
+var mySigningKey = []byte("mysupersecret")
 var serverUrl = "http://localhost:9000/"
 
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +18,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 	}
 
-	client := &http.Client{}
+	/*client := &http.Client{}
 	req, _ := http.NewRequest("GET", serverUrl, nil)
 	req.Header.Set("Token", validToken)
 	res, err := client.Do(req)
@@ -29,9 +29,10 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
-	}
+	}*/
 
-	fmt.Fprintf(w, string(body))
+	fmt.Fprintf(w, validToken)
+	//fmt.Fprintf(w, string(body))
 }
 
 func GenerateJWT() (string, error) {
@@ -40,6 +41,7 @@ func GenerateJWT() (string, error) {
 
 	claims["authorized"] = true
 	claims["user"] = "Wyllis Monteiro"
+	claims["pass"] = "mdp"
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)
