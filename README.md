@@ -6,30 +6,27 @@ Technologies used :
 
 ## Set up project
 
-- Go in client folder
+- Go in api folder
 - Go in main.go file
-- Check constants for database connexion
+- Check config in api/config
 - Create mailing database
 - Import mailing.sql file in mailing database
 
-**Run client**
+**Run api**
 ```sh
 $ cd client
 $ go run main.go
 ```
 
-**Run server**
-```sh
-$ cd server
-$ go run main.go
-```
+## Project architecture
+![tree](assets/tree_mailing.png)
 
+- config allow you to manage project (database connexion)
+- router contains all routes
+- controllers is **JUST** function called in router
+- service allow you to make operations like token generation, hash ...
+- repositories allow you to make operation with database (GET, POST, PUT, DELETE ...)
 
-
-**Use postman**
-- Put GET http://localhost:9000
-- Go in Headers
-- Put "Token" as KEY and put token generated on http://localhost:9001 as VALUE
-- In Body you should have "Super Secret Information"
-
-Tutorial followed for authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
+Tutorial for authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
+Tutorial for database : https://tutorialedge.net/golang/golang-mysql-tutorial/
+Tutorial for hash : https://www.alexedwards.net/blog/how-to-hash-and-verify-passwords-with-argon2-in-go
