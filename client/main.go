@@ -45,13 +45,18 @@ type User struct {
     ID   int    `json:"id"`
     Login string `json:"login"`
     Password string `json:"password"`
+    Token string `json:"token"`
 }
+
+var user = User {}
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	validToken, err := GenerateJWT()
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
+
+	insertUserToken(validToken, user.ID)
 
 	/*client := &http.Client{}
 	req, _ := http.NewRequest("GET", SERVER_URL, nil)
@@ -106,27 +111,39 @@ func connectToBDD() (*sql.DB, error){
 	}
 }
 
-func getOneUser(login string) (User, error){
+func getOneUser(login string) error {
 
 	db, err := connectToBDD()
 	
 	defer db.Close()
 
-	var user User
-
 	if err != nil {
-		user = User {}
-		return user, err
+		return err
 	}
 
-	err = db.QueryRow("SELECT * FROM user WHERE login = ?", login).Scan(&user.ID, &user.Login, &user.Password)
+	err = db.QueryRow("SELECT id, login, password FROM user WHERE login = ?", login).Scan(&user.ID, &user.Login, &user.Password)
 	
 	if err != nil {
-		user = User {}
-		return user, err
+		return err
 	}
 
-	return user, nil 
+	return nil 
+}
+
+func insertUserToken(token string, user_id int) {
+	db, err := connectToBDD()
+
+	defer db.Close()
+
+	// perform a db.Query insert
+    insert, err := db.Query("UPDATE `user` SET `token` = ? WHERE `user`.`id` = ?", token, user_id)
+
+    // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
 }
 
 func generateFromPassword(password string, p *params) (encodedHash string, err error) {
@@ -216,7 +233,7 @@ func decodeHash(encodedHash string) (p *params, salt, hash []byte, err error) {
 func main() {
 	fmt.Println("My Simple Client")
 
-	user, err := getOneUser("wyllis")
+	err := getOneUser("wyllis")
 
 	if err != nil {
 		panic(err.Error())
