@@ -20,7 +20,7 @@ func BroadCast(w http.ResponseWriter, req *http.Request) {
 }
 
 func AddSubscriber(w http.ResponseWriter, req *http.Request) {
-	var body broadcast.AddSubRequest
+	var body broadcast.SubRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
@@ -28,4 +28,15 @@ func AddSubscriber(w http.ResponseWriter, req *http.Request) {
 	}
 
 	broadcast.AddSubscriber(body)
+}
+
+func DeleteSubscriber(w http.ResponseWriter, req *http.Request) {
+	var body broadcast.SubRequest
+
+	err := json.NewDecoder(req.Body).Decode(&body)
+	if err != nil {
+		fmt.Println("Error")
+	}
+
+	broadcast.DeleteSubscriber(body)
 }

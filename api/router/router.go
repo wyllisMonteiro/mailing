@@ -9,4 +9,5 @@ func InitRoutes() {
 	http.HandleFunc("/", controllers.Login)
 	http.HandleFunc("/broadcast", controllers.BroadCast)
 	http.HandleFunc("/broadcast/add/subscriber", controllers.AddSubscriber)
+	http.HandleFunc("/broadcast/delete/subscriber", controllers.DeleteSubscriber)
 }

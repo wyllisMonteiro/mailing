@@ -11,7 +11,7 @@ type CreateBroadcastRequest struct {
     Mails []string
 }
 
-type AddSubRequest struct {
+type SubRequest struct {
 	BroadcastName string
 	SubscriberMail string
 }
@@ -74,14 +74,14 @@ func CreateBroadcast(createBroadcastRequest CreateBroadcastRequest) {
 	}
 }
 
-func AddSubscriber(addSubRequest AddSubRequest) {
-	subscriber, err := sub.FindBy("mail", addSubRequest.SubscriberMail)
+func AddSubscriber(subRequest SubRequest) {
+	subscriber, err := sub.FindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
 		panic(err.Error())
 		return
 	}
 
-	broad, err := findBy("name", addSubRequest.BroadcastName)
+	broad, err := findBy("name", subRequest.BroadcastName)
 	if err != nil {
 		panic(err.Error())
 		return
@@ -96,4 +96,28 @@ func AddSubscriber(addSubRequest AddSubRequest) {
 	}
 
 	defer insert.Close()
+}
+
+func DeleteSubscriber(subRequest SubRequest) {
+	subscriber, err := sub.FindBy("mail", subRequest.SubscriberMail)
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	broad, err := findBy("name", subRequest.BroadcastName)
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	db, err := config.ConnectToBDD()
+
+	delete, err := db.Query("DELETE FROM `broadcast_subscriber` WHERE broadcast_id = ? AND subscriber_id = ?", broad.ID, subscriber.ID)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer delete.Close()
 }
