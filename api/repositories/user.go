@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/wyllisMonteiro/mailing/client/config"
+	"github.com/wyllisMonteiro/mailing/api/config"
 )
 
 type User struct {

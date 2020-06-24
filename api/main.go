@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/wyllisMonteiro/mailing/client/router"
+	"github.com/wyllisMonteiro/mailing/api/router"
 	"log"
 	"net/http"
 )

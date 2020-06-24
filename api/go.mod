@@ -1,4 +1,4 @@
-module github.com/wyllisMonteiro/mailing/client
+module github.com/wyllisMonteiro/mailing/api
 
 go 1.14
 

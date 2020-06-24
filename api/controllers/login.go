@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/wyllisMonteiro/mailing/client/service"
-	"github.com/wyllisMonteiro/mailing/client/repositories"
+	"github.com/wyllisMonteiro/mailing/api/service"
+	"github.com/wyllisMonteiro/mailing/api/repositories"
 	"net/http"
 	"log"
 )
 
-func HomePage(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	user, err := repositories.GetOneUser("wyllis")
 	if err != nil {
 		panic(err.Error())
@@ -20,8 +20,6 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
-
-	fmt.Printf("Match: %v\n", match)
 
 	if !match {
 		return
