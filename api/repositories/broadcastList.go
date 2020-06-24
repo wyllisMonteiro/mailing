@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"github.com/wyllisMonteiro/mailing/api/config"
+	"database/sql"
 	//"github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
@@ -17,26 +18,39 @@ func AddBroadcastList(postBody PostBody) {
 	
 	defer db.Close()
 
+	broadcast_id, err := CreateBroadcast(db, postBody)
+
 	if err != nil {
 		return
 	}
 
-	user, err := GetOneSubscriber("kevin@gmail.com")
+	for mailIndex := 0; mailIndex < len(postBody.Mails); mailIndex++ {
+		subscriber, err := GetOneSubscriber(postBody.Mails[mailIndex])
+		if err != nil {
+			panic(err.Error())
+			return
+		}
+
+		insert, err := db.Query("INSERT INTO `broadcast_subscriber` (`broadcast_id`, `subscriber_id`) VALUES (?, ?)", broadcast_id, subscriber.ID)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		defer insert.Close()
+	}
+}
+
+func CreateBroadcast(db *sql.DB, postBody PostBody) (int64, error) {
+	res, err := db.Exec("INSERT `broadcast`(`name`, `description`) VALUES (?, ?)", postBody.Name, postBody.Description)
 	if err != nil {
-		panic(err.Error())
-		return
+		return 0, err
 	}
 
-	fmt.Println(user.Name)
-
-	/*// perform a db.Query insert
-	insert, err := db.Query("UPDATE `user` SET `token` = ? WHERE `user`.`id` = ?", token, user_id)
-
-	// if there is an error inserting, handle it
+	broadcast_id, err := res.LastInsertId()
 	if err != nil {
-		panic(err.Error())
+		return 0, err
 	}
 
-	// be careful deferring Queries if you are using transactions
-	defer insert.Close()*/
+	return broadcast_id, nil
 }

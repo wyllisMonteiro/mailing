@@ -8,23 +8,15 @@ import (
 	"github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
-type PostBody struct {
-	Name   string
-    Description string
-    Mails []string
-}
-
 func BroadCastList(w http.ResponseWriter, req *http.Request) {
 
-	var body PostBody
+	var body repositories.PostBody
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println("yes")
+		fmt.Println("Error")
 	}
 
 	repositories.AddBroadcastList(body)
-
-	
 
 }
