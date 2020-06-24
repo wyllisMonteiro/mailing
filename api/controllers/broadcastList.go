@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"fmt"
 	"encoding/json"
+	"github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
 type PostBody struct {
-	Name   string    `json:"name"`
-    Description string `json:"description"`
-    Mails []string `json:"mails"`
+	Name   string
+    Description string
+    Mails []string
 }
 
 func BroadCastList(w http.ResponseWriter, req *http.Request) {
@@ -19,8 +20,10 @@ func BroadCastList(w http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println("error")
+		fmt.Println("yes")
 	}
+
+	repositories.AddBroadcastList(body)
 
 	
 

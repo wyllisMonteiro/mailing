@@ -1,7 +1,9 @@
 package repositories
 
 import (
+	"fmt"
 	"github.com/wyllisMonteiro/mailing/api/config"
+	//"github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
 type PostBody struct {
@@ -10,14 +12,22 @@ type PostBody struct {
     Mails []string
 }
 
-func AddBroadcastList(test PostBody) {
+func AddBroadcastList(postBody PostBody) {
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	if err != nil {
-		//return user, err
+		return
 	}
+
+	user, err := GetOneSubscriber("kevin@gmail.com")
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	fmt.Println(user.Name)
 
 	/*// perform a db.Query insert
 	insert, err := db.Query("UPDATE `user` SET `token` = ? WHERE `user`.`id` = ?", token, user_id)
