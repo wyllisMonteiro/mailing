@@ -10,22 +10,22 @@ type SubscriberResponse struct {
     Name string `json:"name"`
 }
 
-var subscriber SubscriberResponse
-
 func FindBy(key string, val string) (SubscriberResponse, error) {
+	var sub SubscriberResponse
+
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	if err != nil {
-		return subscriber, err
+		return sub, err
 	}
 
-	err = db.QueryRow("SELECT id, mail, name FROM subscriber WHERE " + key + " = ?", val).Scan(&subscriber.ID, &subscriber.Mail, &subscriber.Name)
+	err = db.QueryRow("SELECT id, mail, name FROM subscriber WHERE " + key + " = ?", val).Scan(&sub.ID, &sub.Mail, &sub.Name)
 	
 	if err != nil {
-		return subscriber, err
+		return sub, err
 	}
 
-	return subscriber, nil
+	return sub, nil
 }

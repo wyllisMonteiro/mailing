@@ -1,7 +1,6 @@
 package broadcast
 
 import (
-	"fmt"
 	"github.com/wyllisMonteiro/mailing/api/config"
 	sub "github.com/wyllisMonteiro/mailing/api/repositories/subscriber"
 )
@@ -15,6 +14,32 @@ type CreateBroadcastRequest struct {
 type AddSubRequest struct {
 	BroadcastName string
 	SubscriberMail string
+}
+
+type BroadcastResponse struct {
+	ID   int    `json:"id"`
+    Name string `json:"name"`
+    Description string `json:"description"`
+}
+
+func findBy(key string, val string) (BroadcastResponse, error) {
+	var broadResponse BroadcastResponse
+
+	db, err := config.ConnectToBDD()
+	
+	defer db.Close()
+
+	if err != nil {
+		return broadResponse, err
+	}	
+
+	err = db.QueryRow("SELECT id FROM broadcast WHERE " + key + " = ?", val).Scan(&broadResponse.ID)
+	
+	if err != nil {
+		return broadResponse, err
+	}
+
+	return broadResponse, nil
 }
 
 func CreateBroadcast(createBroadcastRequest CreateBroadcastRequest) {
@@ -56,5 +81,19 @@ func AddSubscriber(addSubRequest AddSubRequest) {
 		return
 	}
 
-	fmt.Println(subscriber.ID)
+	broad, err := findBy("name", addSubRequest.BroadcastName)
+	if err != nil {
+		panic(err.Error())
+		return
+	}
+
+	db, err := config.ConnectToBDD()
+
+	insert, err := db.Query("INSERT INTO `broadcast_subscriber` (`broadcast_id`, `subscriber_id`) VALUES (?, ?)", broad.ID, subscriber.ID)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer insert.Close()
 }
