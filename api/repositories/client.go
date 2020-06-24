@@ -4,40 +4,44 @@ import (
 	"github.com/wyllisMonteiro/mailing/api/config"
 )
 
-type User struct {
+type Client struct {
     ID   int    `json:"id"`
-    Login string `json:"login"`
+    Mail string `json:"mail"`
     Password string `json:"password"`
     Token string `json:"token"`
 }
 
-var user User
+var client Client
 
-func GetOneUser(login string) (User, error) {
+func GetOneClient(mail string) (Client, error) {
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	if err != nil {
-		return user, err
+		return client, err
 	}
 
-	err = db.QueryRow("SELECT id, login, password FROM user WHERE login = ?", login).Scan(&user.ID, &user.Login, &user.Password)
+	err = db.QueryRow("SELECT id, mail, password FROM client WHERE mail = ?", mail).Scan(&client.ID, &client.Mail, &client.Password)
 	
 	if err != nil {
-		return user, err
+		return client, err
 	}
 
-	return user, nil
+	return client, nil
 }
 
-func InsertUserToken(token string, user_id int) {
+func InsertClientToken(token string, client_id int) {
 	db, err := config.ConnectToBDD()
 
 	defer db.Close()
 
+	if err != nil {
+		return
+	}
+
 	// perform a db.Query insert
-	insert, err := db.Query("UPDATE `user` SET `token` = ? WHERE `user`.`id` = ?", token, user_id)
+	update, err := db.Query("UPDATE `client` SET `token` = ? WHERE `client`.`id` = ?", token, client_id)
 
 	// if there is an error inserting, handle it
 	if err != nil {
@@ -45,5 +49,5 @@ func InsertUserToken(token string, user_id int) {
 	}
 
 	// be careful deferring Queries if you are using transactions
-	defer insert.Close()
+	defer update.Close()
 }

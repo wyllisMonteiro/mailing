@@ -22,4 +22,6 @@ func BroadCastList(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("error")
 	}
 
+	
+
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	user, err := repositories.GetOneUser("wyllis")
+	user, err := repositories.GetOneClient("wyllismonteiro@gmail.com")
 	if err != nil {
 		panic(err.Error())
 		return
@@ -30,7 +30,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 	}
 
-	repositories.InsertUserToken(validToken, user.ID)
+	repositories.InsertClientToken(validToken, user.ID)
 
 	/*client := &http.Client{}
 	req, _ := http.NewRequest("GET", SERVER_URL, nil)
