@@ -7,5 +7,6 @@ import (
 
 func InitRoutes() {
 	http.HandleFunc("/", controllers.Login)
-	http.HandleFunc("/broadcast_list", controllers.BroadCastList)
+	http.HandleFunc("/broadcast", controllers.BroadCast)
+	http.HandleFunc("/broadcast/add/subscriber", controllers.AddSubscriber)
 }

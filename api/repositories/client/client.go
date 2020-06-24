@@ -1,37 +1,37 @@
-package repositories
+package client
 
 import (
 	"github.com/wyllisMonteiro/mailing/api/config"
 )
 
-type Client struct {
+type ClientResponse struct {
     ID   int    `json:"id"`
     Mail string `json:"mail"`
     Password string `json:"password"`
     Token string `json:"token"`
 }
 
-var client Client
+var clientResponse ClientResponse
 
-func GetOneClient(mail string) (Client, error) {
+func FindBy(key string, val string) (ClientResponse, error) {
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	if err != nil {
-		return client, err
+		return clientResponse, err
 	}
 
-	err = db.QueryRow("SELECT id, mail, password FROM client WHERE mail = ?", mail).Scan(&client.ID, &client.Mail, &client.Password)
+	err = db.QueryRow("SELECT id, mail, password FROM client WHERE " + key + " = ?", val).Scan(&clientResponse.ID, &clientResponse.Mail, &clientResponse.Password)
 	
 	if err != nil {
-		return client, err
+		return clientResponse, err
 	}
 
-	return client, nil
+	return clientResponse, nil
 }
 
-func InsertClientToken(token string, client_id int) {
+func UpdateToken(token string, client_id int) {
 	db, err := config.ConnectToBDD()
 
 	defer db.Close()

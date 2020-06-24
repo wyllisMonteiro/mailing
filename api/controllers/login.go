@@ -3,20 +3,20 @@ package controllers
 import (
 	"fmt"
 	"github.com/wyllisMonteiro/mailing/api/service"
-	"github.com/wyllisMonteiro/mailing/api/repositories"
+	client "github.com/wyllisMonteiro/mailing/api/repositories/client"
 	"net/http"
 	"log"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	user, err := repositories.GetOneClient("wyllismonteiro@gmail.com")
+	user, err := client.FindBy("mail", "wyllismonteiro@gmail.com")
 	if err != nil {
 		panic(err.Error())
 		return
 	}
 
 	match, err := service.ComparePasswordAndHash("w", user.Password)
-    if err != nil {
+  	if err != nil {
 		log.Fatal(err)
 		return
 	}
@@ -30,21 +30,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 	}
 
-	repositories.InsertClientToken(validToken, user.ID)
-
-	/*client := &http.Client{}
-	req, _ := http.NewRequest("GET", SERVER_URL, nil)
-	req.Header.Set("Token", validToken)
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Fprintf(w, "Error: %s", err.Error())
-	}
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Fprintf(w, err.Error())
-	}*/
-
+	client.UpdateToken(validToken, user.ID)
 	_, _ = fmt.Fprintf(w, validToken)
-	//fmt.Fprintf(w, string(body))
 }
