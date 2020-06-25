@@ -7,6 +7,7 @@ import (
 )
 
 var MY_SIGNING_KEY 	= []byte("mysupersecret")
+var tokenString string
 
 func GenerateJWT() (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -24,4 +25,8 @@ func GenerateJWT() (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func GetToken() string {
+	return tokenString
 }

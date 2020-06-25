@@ -14,7 +14,7 @@ Technologies used :
 
 **Run api**
 ```sh
-$ cd client
+$ cd api
 $ go run main.go
 ```
 
