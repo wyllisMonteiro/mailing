@@ -10,6 +10,17 @@ type SubscriberResponse struct {
     Name string `json:"name"`
 }
 
+/**
+  * Get subscriber by id, mail or name
+  * 
+  * 	in :
+  *		key => field name in bdd you want to looking for
+  *		val => field value in bdd
+  *
+  * 	out :
+  * 	SubscriberResponse => data about subscriber
+  *		error	
+  */
 func FindBy(key string, val string) (SubscriberResponse, error) {
 	var sub SubscriberResponse
 

@@ -13,6 +13,17 @@ type ClientResponse struct {
 
 var clientResponse ClientResponse
 
+/**
+  * Get client by id, mail or password
+  * 
+  * 	in :
+  *		key => field name in bdd you want to looking for
+  *		val => field value in bdd
+  *
+  * 	out :
+  * 	ClientResponse => data about client
+  *		error	
+  */
 func FindBy(key string, val string) (ClientResponse, error) {
 	db, err := config.ConnectToBDD()
 	
@@ -31,6 +42,14 @@ func FindBy(key string, val string) (ClientResponse, error) {
 	return clientResponse, nil
 }
 
+/**
+  * Update token client
+  * 
+  * 	in :
+  *		token => new token
+  *		client_id => client id
+  *
+  */
 func UpdateToken(token string, client_id int) {
 	db, err := config.ConnectToBDD()
 

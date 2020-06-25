@@ -13,6 +13,17 @@ type BroadcastResponse struct {
     Description string `json:"description"`
 }
 
+/**
+  * Get broadcast by id
+  * 
+  * 	in :
+  *		key => field name in bdd you want to looking for
+  *		val => field value in bdd
+  *
+  * 	out :
+  * 	BroadcastResponse => data about broadcast
+  *		error	
+  */
 func findBy(key string, val string) (BroadcastResponse, error) {
 	var broadResponse BroadcastResponse
 
@@ -40,6 +51,13 @@ type CreateBroadcastRequest struct {
     Mails []string
 }
 
+/**
+  * Create broadcast
+  * 
+  * 	in :
+  *		w => ResponseWriter
+  * 	createBroadcastRequest => params request
+  */
 func CreateBroadcast(w http.ResponseWriter, createBroadcastRequest CreateBroadcastRequest) {
 	db, err := config.ConnectToBDD()
 	
@@ -84,6 +102,13 @@ type SubRequest struct {
 	SubscriberMail string
 }
 
+/**
+  * Add subscriber from broadcast
+  * 
+  * 	in :
+  *		w => ResponseWriter
+  * 	SubRequest => params request
+  */
 func AddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 	subscriber, err := sub.FindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
@@ -111,6 +136,13 @@ func AddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 	defer insert.Close()
 }
 
+/**
+  * Delete subscriber from broadcast
+  * 
+  * 	in :
+  *		w => ResponseWriter
+  * 	SubRequest => params request
+  */
 func DeleteSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 	subscriber, err := sub.FindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
