@@ -9,15 +9,18 @@ on:
       - '*'
 
 jobs:
-
-  pre-build:
-    name: lint
-    runs-on: ubuntu-latest
+  lint:
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v1
+      - uses: actions/setup-go@v2
         with:
-          version: v1.26
-          working-directory: api/
+          stable: 'false'
+          go-version: '1.14.1'
+
+      - name: Lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
+
+          golangci-lint run
 
