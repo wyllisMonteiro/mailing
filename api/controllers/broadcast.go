@@ -1,12 +1,24 @@
 package controllers
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 	"encoding/json"
 	broadcast "github.com/wyllisMonteiro/mailing/api/repositories/broadcast"
 )
 
+/**
+  * Get broadcast list
+  * 
+  * 	GET /broadcast
+  * 	req.body :
+  *		{
+  *	  		name   			string
+  * 		description 	string
+  *  		mails 			[]string
+  *		}
+  * 
+  */
 func BroadCast(w http.ResponseWriter, req *http.Request) {
 	var body broadcast.CreateBroadcastRequest
 
@@ -15,10 +27,20 @@ func BroadCast(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("Error")
 	}
 
-	broadcast.CreateBroadcast(body)
-
+	broadcast.CreateBroadcast(w, body)
 }
 
+/**
+  * Add subscriber in broadcast list
+  * 
+  * 	POST /broadcast/add/subscriber
+  * 	req.body :
+  *		{
+  *	  		broadcastName 		string
+  *			subscriberMail 		string
+  *		}
+  * 
+  */
 func AddSubscriber(w http.ResponseWriter, req *http.Request) {
 	var body broadcast.SubRequest
 
@@ -27,9 +49,20 @@ func AddSubscriber(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("Error")
 	}
 
-	broadcast.AddSubscriber(body)
+	broadcast.AddSubscriber(w, body)
 }
 
+/**
+  * Delete subscriber in broadcast list
+  * 
+  * 	DELETE /broadcast/delete/subscriber
+  * 	req.body :
+  *		{
+  *	  		broadcastName 		string
+  *			subscriberMail 		string
+  *		}
+  * 
+  */
 func DeleteSubscriber(w http.ResponseWriter, req *http.Request) {
 	var body broadcast.SubRequest
 
@@ -38,5 +71,5 @@ func DeleteSubscriber(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("Error")
 	}
 
-	broadcast.DeleteSubscriber(body)
+	broadcast.DeleteSubscriber(w, body)
 }
