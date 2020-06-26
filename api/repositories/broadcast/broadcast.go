@@ -1,6 +1,7 @@
 package broadcast
 
 import (
+	"fmt"
 	"net/http"
 	"github.com/wyllisMonteiro/mailing/api/config"
 	sub "github.com/wyllisMonteiro/mailing/api/repositories/subscriber"
@@ -9,13 +10,13 @@ import (
 
 type BroadcastResponse struct {
 	ID   int    `json:"id"`
-  Name string `json:"name"`
-  Description string `json:"description"`
-  Subscribers sub.SubscriberResponse
+  	Name string `json:"name"`
+  	Description string `json:"description"`
+  	Subscribers sub.SubscriberResponse
 }
 
 type GetBroadcastRequest struct {
-  Name string `json:"name"`
+  	Name string `json:"name"`
 }
 
 /**
@@ -38,13 +39,12 @@ func FindBy(key string, val string) (BroadcastResponse, error) {
 
 	if err != nil {
 		return broadResponse, err
-	}	
+	}
 
-	err = db.QueryRow("SELECT id, name, description FROM broadcast WHERE " + key + " = ?", val).Scan(&broadResponse.ID, 
-																																																	 &broadResponse.Name, 
-																																																	 &broadResponse.Description)
+	err = db.QueryRow("SELECT id, name, description FROM broadcast WHERE " + key + " = ?", val).Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description)
 	
 	if err != nil {
+		fmt.Println(val)
 		return broadResponse, err
 	}
 
