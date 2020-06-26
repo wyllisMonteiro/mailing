@@ -20,34 +20,34 @@ import (
   */
 func Campaign(w http.ResponseWriter, req *http.Request) {
 
+  if req.Method == "GET" {
+    GetCampaign(w, req)
+  }
+
   if req.Method == "POST" {
     CreateCampaign(w, req)
   }
-  
-  /*
-  broad, err := broadcast.FindWithSubs(body.Name)
-  if err != nil {
-    fmt.Println(err.Error())
-    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, liste de diffusion introuvable")
-    return
-  }
 
-  db, err := config.ConnectToBDD()
-  if err != nil {
-    return
-  }
+}
 
-  service.RabbitSend()
+func GetCampaign(w http.ResponseWriter, req *http.Request) {
+  var body campaign.GetCampaignRequest
 
-  insert, err := db.Query("INSERT `mail`(`description`) VALUES (?)", broad.Description)
+	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion n'a pas été effectué")
-		return 
+    fmt.Println("Error")
+    return
   }
   
-  defer insert.Close()
+  getCampaign, err := campaign.FindByID(body.ID)
+  if err != nil {
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
+    return
+  }
 
-  service.WriteJSON(w, http.StatusOK, broad)*/
+  //service.SendIdCampaign(createCampaign.ID)
+  service.WriteJSON(w, http.StatusOK, getCampaign)
+
 }
 
 func CreateCampaign(w http.ResponseWriter, req *http.Request) {
@@ -65,6 +65,6 @@ func CreateCampaign(w http.ResponseWriter, req *http.Request) {
     return
   }
 
+  //service.SendIdCampaign(createCampaign.ID)
   service.WriteJSON(w, http.StatusOK, createCampaign)
-
 }

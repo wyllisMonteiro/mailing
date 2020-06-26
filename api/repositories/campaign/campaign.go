@@ -50,3 +50,26 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 
 	return createCampaignResponse, nil
 }
+
+type GetCampaignRequest struct {
+	ID string `json:"id"`
+}
+
+func FindByID(campaignId string) (CreateCampaignResponse, error) {
+	var createCampaignResponse CreateCampaignResponse = CreateCampaignResponse {}
+
+	db, err := config.ConnectToBDD()
+	
+	defer db.Close()
+
+	err = db.QueryRow("SELECT * FROM campaign WHERE id = ?", 
+					  campaignId).Scan(&createCampaignResponse.ID,
+									   &createCampaignResponse.Message,
+									   &createCampaignResponse.BroadcastID)
+	
+	if err != nil {
+		return createCampaignResponse, err
+	}
+
+	return createCampaignResponse, nil
+}

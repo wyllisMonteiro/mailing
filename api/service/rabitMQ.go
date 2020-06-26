@@ -2,6 +2,7 @@ package service
 
 import (
 	"log"
+	"strconv"
 	"github.com/streadway/amqp"
 )
 
@@ -11,7 +12,7 @@ func FailOnError(err error, msg string) {
 	}
 }
 
-func RabbitSend() {
+func SendIdCampaign(idCampaign int64) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -30,7 +31,7 @@ func RabbitSend() {
 	  )
 	  FailOnError(err, "Failed to declare a queue")
 
-	  body := "YESSAI"
+	  body := strconv.FormatInt(idCampaign, 10)
 	  err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
