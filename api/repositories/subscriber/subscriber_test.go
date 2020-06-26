@@ -2,14 +2,10 @@ package subscriber
 
 import "testing"
 
-func TestFindBy(t *testing.T) {
-	result, err := FindBy("name", "Kevin")
+func TestAdd(t *testing.T) {
+	result := Add(1, 2)
 
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-
-	if result.Name == "" {
-		t.Errorf("error 2 " + result.Name)
+	if result != 3 {
+		t.Errorf("error 2 ")
 	}
 }
