@@ -6,7 +6,7 @@ func TestFindBy(t *testing.T) {
 	result, err := FindBy("name", "Kevin")
 
 	if err != nil {
-		t.Errorf("error")
+		t.Errorf(err.Error())
 	}
 
 	if result.Name == "" {
