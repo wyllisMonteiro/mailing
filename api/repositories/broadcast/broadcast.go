@@ -9,8 +9,13 @@ import (
 
 type BroadcastResponse struct {
 	ID   int    `json:"id"`
-    Name string `json:"name"`
-    Description string `json:"description"`
+  Name string `json:"name"`
+  Description string `json:"description"`
+  Subscribers sub.SubscriberResponse
+}
+
+type GetBroadcastRequest struct {
+  Name string `json:"name"`
 }
 
 /**
@@ -24,7 +29,7 @@ type BroadcastResponse struct {
   * 	BroadcastResponse => data about broadcast
   *		error	
   */
-func findBy(key string, val string) (BroadcastResponse, error) {
+func FindBy(key string, val string) (BroadcastResponse, error) {
 	var broadResponse BroadcastResponse
 
 	db, err := config.ConnectToBDD()
@@ -35,7 +40,39 @@ func findBy(key string, val string) (BroadcastResponse, error) {
 		return broadResponse, err
 	}	
 
-	err = db.QueryRow("SELECT id FROM broadcast WHERE " + key + " = ?", val).Scan(&broadResponse.ID)
+	err = db.QueryRow("SELECT id, name, description FROM broadcast WHERE " + key + " = ?", val).Scan(&broadResponse.ID, 
+																																																	 &broadResponse.Name, 
+																																																	 &broadResponse.Description)
+	
+	if err != nil {
+		return broadResponse, err
+	}
+
+	return broadResponse, nil
+}
+
+func FindWithSubs(name string) (BroadcastResponse, error) {
+	var broadResponse BroadcastResponse
+
+	db, err := config.ConnectToBDD()
+	
+	defer db.Close()
+
+	if err != nil {
+		return broadResponse, err
+	}	
+	
+	selectFields := "broadcast.id, broadcast.name, broadcast.description, subscriber.id, subscriber.mail, subscriber.name"
+	fromTable := "broadcast, broadcast_subscriber, subscriber"
+	where := "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
+	
+	err = db.QueryRow("SELECT " + selectFields + " FROM " + fromTable + " WHERE " + where, 
+										name).Scan(&broadResponse.ID,
+															 &broadResponse.Name,
+															 &broadResponse.Description,
+															 &broadResponse.Subscribers.ID,
+															 &broadResponse.Subscribers.Mail,
+															 &broadResponse.Subscribers.Name)
 	
 	if err != nil {
 		return broadResponse, err
@@ -47,8 +84,8 @@ func findBy(key string, val string) (BroadcastResponse, error) {
 type CreateBroadcastRequest struct {
 	ID int64
 	Name   string
-    Description string
-    Mails []string
+	Description string
+	Mails []string
 }
 
 /**
@@ -116,7 +153,7 @@ func AddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 		return
 	}
 
-	broad, err := findBy("name", subRequest.BroadcastName)
+	broad, err := FindBy("name", subRequest.BroadcastName)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Liste de diffusion introuvable")
 		return
@@ -150,7 +187,7 @@ func DeleteSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 		return
 	}
 
-	broad, err := findBy("name", subRequest.BroadcastName)
+	broad, err := FindBy("name", subRequest.BroadcastName)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Liste de diffusion introuvable")
 		return
