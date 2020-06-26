@@ -19,7 +19,7 @@ type GetBroadcastRequest struct {
 }
 
 /**
-  * Get broadcast by id
+  * Get broadcast by id, name, desc
   * 
   * 	in :
   *		key => field name in bdd you want to looking for
@@ -51,6 +51,16 @@ func FindBy(key string, val string) (BroadcastResponse, error) {
 	return broadResponse, nil
 }
 
+/**
+  * Get broadcast name with subscribers
+  * 
+  * 	in :
+  *		name => broadcast name
+  *
+  * 	out :
+  * 	BroadcastResponse => data about broadcast
+  *		error	
+  */
 func FindWithSubs(name string) (BroadcastResponse, error) {
 	var broadResponse BroadcastResponse
 
@@ -62,9 +72,9 @@ func FindWithSubs(name string) (BroadcastResponse, error) {
 		return broadResponse, err
 	}	
 	
-	selectFields := "broadcast.id, broadcast.name, broadcast.description, subscriber.id, subscriber.mail, subscriber.name"
-	fromTable := "broadcast, broadcast_subscriber, subscriber"
-	where := "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
+	selectFields 	:= "broadcast.id, broadcast.name, broadcast.description, subscriber.id, subscriber.mail, subscriber.name"
+	fromTable 		:= "broadcast, broadcast_subscriber, subscriber"
+	where 				:= "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
 	
 	err = db.QueryRow("SELECT " + selectFields + " FROM " + fromTable + " WHERE " + where, 
 										name).Scan(&broadResponse.ID,
