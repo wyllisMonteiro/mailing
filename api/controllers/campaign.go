@@ -39,6 +39,8 @@ func Campaign(w http.ResponseWriter, req *http.Request) {
     return
   }
 
+  service.RabbitSend()
+
   insert, err := db.Query("INSERT `mail`(`description`) VALUES (?)", broad.Description)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion n'a pas été effectué")
