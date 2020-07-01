@@ -3,7 +3,7 @@ package service
 import (
 	"log"
 	"github.com/streadway/amqp"
-	campaign "github.com/wyllisMonteiro/mailing/api/repositories/campaign"
+	repos "github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
 func FailOnError(err error, msg string) {
@@ -47,7 +47,7 @@ func ReceiveMails() {
 	  go func() {
 		for d := range msgs {
 			campaignId :=d.Body
-			camp, err = campaign.FindByID(campaignId)
+			camp, err = repos.FindByID(campaignId)
 			if err != nil {
 				log.Printf("ERROR GET CAMPAIGN")
 			}

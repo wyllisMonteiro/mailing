@@ -4,7 +4,7 @@ import (
   "net/http"
   "fmt"
   "encoding/json"
-	campaign "github.com/wyllisMonteiro/mailing/api/repositories/campaign"
+	repo "github.com/wyllisMonteiro/mailing/api/repositories"
 	service "github.com/wyllisMonteiro/mailing/api/service"
 )
 
@@ -31,7 +31,7 @@ func Campaign(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetCampaign(w http.ResponseWriter, req *http.Request) {
-  var body campaign.GetCampaignRequest
+  var body repo.GetCampaignRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
@@ -39,7 +39,7 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
     return
   }
   
-  getCampaign, err := campaign.FindByID(body.ID)
+  getCampaign, err := repo.CampaignFindByID(body.ID)
   if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
     return
@@ -51,7 +51,7 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
 }
 
 func CreateCampaign(w http.ResponseWriter, req *http.Request) {
-  var body campaign.CreateCampaignRequest
+  var body repo.CreateCampaignRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
@@ -59,7 +59,7 @@ func CreateCampaign(w http.ResponseWriter, req *http.Request) {
     return
 	}
 
-  createCampaign, err := campaign.CreateCampaign(w, body)
+  createCampaign, err := repo.CreateCampaign(w, body)
   if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
     return

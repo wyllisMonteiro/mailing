@@ -1,9 +1,8 @@
-package campaign
+package repositories
 
 import (
 	"net/http"
 	"github.com/wyllisMonteiro/mailing/api/service"
-	broadcast "github.com/wyllisMonteiro/mailing/api/repositories/broadcast"
 	config "github.com/wyllisMonteiro/mailing/api/config"
 )
 
@@ -22,7 +21,7 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 
 	var createCampaignResponse CreateCampaignResponse = CreateCampaignResponse{}
 
-	broad, err := broadcast.FindBy("name", createCampaignRequest.BroadcastName)
+	broad, err := BroadcastFindBy("name", createCampaignRequest.BroadcastName)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion n'a pas été effectué")
 		return createCampaignResponse, err
@@ -55,7 +54,7 @@ type GetCampaignRequest struct {
 	ID string `json:"id"`
 }
 
-func FindByID(campaignId string) (CreateCampaignResponse, error) {
+func CampaignFindByID(campaignId string) (CreateCampaignResponse, error) {
 	var createCampaignResponse CreateCampaignResponse = CreateCampaignResponse {}
 
 	db, err := config.ConnectToBDD()

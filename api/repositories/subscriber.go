@@ -1,4 +1,4 @@
-package subscriber
+package repositories
 
 import (
 	"github.com/wyllisMonteiro/mailing/api/config"
@@ -21,7 +21,7 @@ type SubscriberResponse struct {
   * 	SubscriberResponse => data about subscriber
   *		error	
   */
-func FindBy(key string, val string) (SubscriberResponse, error) {
+func SubscriberFindBy(key string, val string) (SubscriberResponse, error) {
 	var sub SubscriberResponse
 
 	db, err := config.ConnectToBDD()

@@ -3,13 +3,13 @@ package controllers
 import (
 	"fmt"
 	"github.com/wyllisMonteiro/mailing/api/service"
-	client "github.com/wyllisMonteiro/mailing/api/repositories/client"
+	repo "github.com/wyllisMonteiro/mailing/api/repositories"
 	"net/http"
 	"log"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	user, err := client.FindBy("mail", "wyllismonteiro@gmail.com")
+	user, err := repo.ClientFindBy("mail", "wyllismonteiro@gmail.com")
 	if err != nil {
 		panic(err.Error())
 		return
@@ -30,6 +30,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 	}
 
-	client.UpdateToken(validToken, user.ID)
+	repo.UpdateToken(validToken, user.ID)
 	_, _ = fmt.Fprintf(w, validToken)
 }

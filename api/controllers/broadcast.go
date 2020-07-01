@@ -5,7 +5,7 @@ import (
 	"net/http"
   "encoding/json"
   service "github.com/wyllisMonteiro/mailing/api/service"
-	broadcast "github.com/wyllisMonteiro/mailing/api/repositories/broadcast"
+	repos "github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
 /**
@@ -32,14 +32,14 @@ func BroadCast(w http.ResponseWriter, req *http.Request) {
   *		}
   */
   func GetBroadcast(w http.ResponseWriter, req *http.Request) {
-    var body broadcast.GetBroadcastRequest
+    var body repos.GetBroadcastRequest
   
     err := json.NewDecoder(req.Body).Decode(&body)
     if err != nil {
       fmt.Println("Error")
     }
   
-    broad, err := broadcast.FindWithSubs(body.Name)
+    broad, err := repos.BroadcastFindWithSubs(body.Name)
     if err != nil {
       fmt.Println(err.Error())
       service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, liste de diffusion introuvable")
@@ -59,14 +59,14 @@ func BroadCast(w http.ResponseWriter, req *http.Request) {
   *		}
   */
 func CreateBroadcast(w http.ResponseWriter, req *http.Request) {
-  var body broadcast.CreateBroadcastRequest
+  var body repos.CreateBroadcastRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
 		fmt.Println("Error")
 	}
 
-	broadcast.CreateBroadcast(w, body)
+	repos.CreateBroadcast(w, body)
 }
 
 /**
@@ -81,14 +81,14 @@ func CreateBroadcast(w http.ResponseWriter, req *http.Request) {
   * 
   */
 func AddSubscriber(w http.ResponseWriter, req *http.Request) {
-	var body broadcast.SubRequest
+	var body repos.SubRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
 		fmt.Println("Error")
 	}
 
-	broadcast.AddSubscriber(w, body)
+	repos.BroadcastAddSubscriber(w, body)
 }
 
 /**
@@ -103,12 +103,12 @@ func AddSubscriber(w http.ResponseWriter, req *http.Request) {
   * 
   */
 func DeleteSubscriber(w http.ResponseWriter, req *http.Request) {
-	var body broadcast.SubRequest
+	var body repos.SubRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
 		fmt.Println("Error")
 	}
 
-	broadcast.DeleteSubscriber(w, body)
+	repos.BroadcastDeleteSubscriber(w, body)
 }

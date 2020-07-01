@@ -1,4 +1,4 @@
-package client
+package repositories
 
 import (
 	"github.com/wyllisMonteiro/mailing/api/config"
@@ -24,7 +24,7 @@ var clientResponse ClientResponse
   * 	ClientResponse => data about client
   *		error	
   */
-func FindBy(key string, val string) (ClientResponse, error) {
+func ClientFindBy(key string, val string) (ClientResponse, error) {
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()

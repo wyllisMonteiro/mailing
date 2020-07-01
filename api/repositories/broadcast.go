@@ -1,10 +1,9 @@
-package broadcast
+package repositories
 
 import (
 	"fmt"
 	"net/http"
 	"github.com/wyllisMonteiro/mailing/api/config"
-	sub "github.com/wyllisMonteiro/mailing/api/repositories/subscriber"
 	"github.com/wyllisMonteiro/mailing/api/service"
 )
 
@@ -12,7 +11,7 @@ type BroadcastResponse struct {
 	ID   int    `json:"id"`
   	Name string `json:"name"`
   	Description string `json:"description"`
-  	Subscribers sub.SubscriberResponse
+  	Subscribers SubscriberResponse
 }
 
 type GetBroadcastRequest struct {
@@ -30,7 +29,7 @@ type GetBroadcastRequest struct {
   * 	BroadcastResponse => data about broadcast
   *		error	
   */
-func FindBy(key string, val string) (BroadcastResponse, error) {
+func BroadcastFindBy(key string, val string) (BroadcastResponse, error) {
 	var broadResponse BroadcastResponse
 
 	db, err := config.ConnectToBDD()
@@ -61,7 +60,7 @@ func FindBy(key string, val string) (BroadcastResponse, error) {
   * 	BroadcastResponse => data about broadcast
   *		error	
   */
-func FindWithSubs(name string) (BroadcastResponse, error) {
+func BroadcastFindWithSubs(name string) (BroadcastResponse, error) {
 	var broadResponse BroadcastResponse
 
 	db, err := config.ConnectToBDD()
@@ -125,7 +124,7 @@ func CreateBroadcast(w http.ResponseWriter, createBroadcastRequest CreateBroadca
 	createBroadcastRequest.ID = broadcast_id
 
 	for mailIndex := 0; mailIndex < len(createBroadcastRequest.Mails); mailIndex++ {
-		subscriber, err := sub.FindBy("mail", createBroadcastRequest.Mails[mailIndex])
+		subscriber, err := SubscriberFindBy("mail", createBroadcastRequest.Mails[mailIndex])
 		if err != nil {
 			service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mail introuvable")
 			return
@@ -156,14 +155,14 @@ type SubRequest struct {
   *		w => ResponseWriter
   * 	SubRequest => params request
   */
-func AddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
-	subscriber, err := sub.FindBy("mail", subRequest.SubscriberMail)
+func BroadcastAddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
+	subscriber, err := SubscriberFindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Subscriber introuvable")
 		return
 	}
 
-	broad, err := FindBy("name", subRequest.BroadcastName)
+	broad, err := BroadcastFindBy("name", subRequest.BroadcastName)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Liste de diffusion introuvable")
 		return
@@ -190,14 +189,14 @@ func AddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
   *		w => ResponseWriter
   * 	SubRequest => params request
   */
-func DeleteSubscriber(w http.ResponseWriter, subRequest SubRequest) {
-	subscriber, err := sub.FindBy("mail", subRequest.SubscriberMail)
+func BroadcastDeleteSubscriber(w http.ResponseWriter, subRequest SubRequest) {
+	subscriber, err := SubscriberFindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Subscriber introuvable")
 		return
 	}
 
-	broad, err := FindBy("name", subRequest.BroadcastName)
+	broad, err := BroadcastFindBy("name", subRequest.BroadcastName)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Liste de diffusion introuvable")
 		return
