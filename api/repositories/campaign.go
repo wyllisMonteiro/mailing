@@ -12,9 +12,9 @@ type CreateCampaignRequest struct {
 }
 
 type CreateCampaignResponse struct {
-	ID int64
-	Message string
-	BroadcastID int
+	ID int64 `json:"id"`
+	Message string `json:"message"`
+	BroadcastID int `json:"broadcast_id"`
 }
 
 func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignRequest) (CreateCampaignResponse, error) {

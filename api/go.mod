@@ -19,6 +19,7 @@ require (
 	github.com/go-swagger/go-swagger v0.24.0 // indirect
 	github.com/golang/dep v0.5.4 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/gorilla/mux v1.7.4
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jmank88/nuts v0.4.0 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
