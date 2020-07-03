@@ -1,0 +1,195 @@
+swagger: "2.0"
+info:
+  description: "Documentation about mailing api"
+  version: "1.0.0"
+  title: "Swagger Mailing"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "wyllismonteiro@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: "/v1"
+tags:
+- name: "login"
+  description: "Login client to the app"
+- name: "broadcast"
+  description: "Operations about broadcast"
+- name: "campaign"
+  description: "Operations about campaign"
+schemes:
+- "https"
+- "http"
+paths:
+  /login:
+    post:
+      tags:
+      - "login"
+      summary: "Login client"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Login"
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/LoginResponse"
+  /broadcast:
+    post:
+      tags:
+      - "broadcast"
+      summary: "Create new broadcast"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateBroadcast"
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/BroadcastResponse"
+  /broadcast/{broadcastName}:
+    get:
+      tags:
+      - "broadcast"
+      summary: "Get broadcast"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "name"
+        required: true
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/GetBroadcastResponse"
+  /campaign:
+    post:
+      tags:
+      - "campaign"
+      summary: "Create new campaign"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateCampaign"
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/CampaignResponse"
+  /campaign/{id}:
+    get:
+      tags:
+      - "campaign"
+      summary: "Get campaign"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        required: true
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/CampaignResponse"
+definitions:
+  Login:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      password:
+        type: "string"
+  LoginResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+  GetBroadcastResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      name: 
+        type: "string"
+      description:
+        type: "string"
+      Subscribers:
+        type: "array"
+        items:
+          $ref: "#/definitions/SubscribersResponse"
+  CreateBroadcast:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      description:
+        type: "string"
+      mails:
+        type: "array"
+        items:
+          type: "string"
+  BroadcastResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      name:
+        type: "string"
+      description:
+        type: "string"
+      mails:
+        type: "array"
+        items:
+          type: "string"
+  CreateCampaign:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      broadcastName:
+        type: "string"
+  CampaignResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      message:
+        type: "string"
+      broadcast_id:
+        type: "int"
+  SubscribersResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      name: 
+        type: "string"
+      mail:
+        type: "string"
+    
