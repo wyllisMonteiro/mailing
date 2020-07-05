@@ -9,11 +9,13 @@ import (
 
 func InitRoutes() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", controllers.Login).Methods("POST")
-	r.HandleFunc("/campaign", controllers.Campaign).Methods("GET", "POST")
-	r.HandleFunc("/broadcast", controllers.BroadCast).Methods("GET, POST")
-	r.HandleFunc("/broadcast/add/subscriber", controllers.AddSubscriber).Methods("POST")
-	r.HandleFunc("/broadcast/delete/subscriber", controllers.DeleteSubscriber).Methods("DELETE")
+	r.HandleFunc("/login", controllers.Login).Methods("POST")
+	r.HandleFunc("/campaigns", controllers.CreateCampaign).Methods("POST")
+	r.HandleFunc("/campaigns/{id}", controllers.GetCampaign).Methods("GET")
+	r.HandleFunc("/broadcasts", controllers.CreateBroadcast).Methods("POST")
+	r.HandleFunc("/broadcasts", controllers.GetBroadcast).Queries("name", "{name}").Methods("GET")
+	r.HandleFunc("/broadcasts/subscriber", controllers.AddSubscriber).Methods("POST")
+	r.HandleFunc("/broadcasts/subscriber", controllers.DeleteSubscriber).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":9000", r))
 }

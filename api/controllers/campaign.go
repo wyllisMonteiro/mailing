@@ -5,41 +5,15 @@ import (
   "fmt"
   "encoding/json"
 	repo "github.com/wyllisMonteiro/mailing/api/repositories"
-	service "github.com/wyllisMonteiro/mailing/api/service"
+  service "github.com/wyllisMonteiro/mailing/api/service"
+	"github.com/gorilla/mux"
 )
 
-/**
-  * Post broadcast list
-  * 
-  * 	POST /campaign
-  * 	req.body :
-  *		{
-  *	  		message   			  string
-  *		}
-  * 
-  */
-func Campaign(w http.ResponseWriter, req *http.Request) {
-
-  if req.Method == "GET" {
-    GetCampaign(w, req)
-  }
-
-  if req.Method == "POST" {
-    CreateCampaign(w, req)
-  }
-
-}
-
 func GetCampaign(w http.ResponseWriter, req *http.Request) {
-  var body repo.GetCampaignRequest
 
-	err := json.NewDecoder(req.Body).Decode(&body)
-	if err != nil {
-    fmt.Println("Error")
-    return
-  }
+  urlParams := mux.Vars(req)
   
-  getCampaign, err := repo.CampaignFindByID(body.ID)
+  getCampaign, err := repo.CampaignFindByID(urlParams["id"])
   if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
     return

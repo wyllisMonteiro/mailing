@@ -1,35 +1,51 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/wyllisMonteiro/mailing/api/service"
 	repo "github.com/wyllisMonteiro/mailing/api/repositories"
 	"net/http"
-	"log"
+	"encoding/json"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	user, err := repo.ClientFindBy("mail", "wyllismonteiro@gmail.com")
+func Login(w http.ResponseWriter, req *http.Request) {
+	var body repo.Client
+
+	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		panic(err.Error())
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue")
+    	return
+	}
+
+	user, err := repo.ClientFindBy("mail", body.Mail)
+	if err != nil {
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mauvais mail")
 		return
 	}
 
-	match, err := service.ComparePasswordAndHash("w", user.Password)
+	match, err := service.ComparePasswordAndHash(body.Password, user.Password)
   	if err != nil {
-		log.Fatal(err)
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mauvais mot de passe")
 		return
 	}
 
 	if !match {
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mauvais mot de passe")
 		return
 	}
 
 	validToken, err := service.GenerateJWT()
 	if err != nil {
-		fmt.Fprintf(w, err.Error())
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, l'authentification a échoué")
+		return
 	}
 
-	repo.UpdateToken(validToken, user.ID)
-	_, _ = fmt.Fprintf(w, validToken)
+	user.Token= validToken
+
+	err = repo.UpdateToken(validToken, user.ID)
+	if err != nil {
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, le token n'a pas été ajouté à la base de données")
+		return
+	}
+	
+	service.WriteJSON(w, http.StatusOK, user)
 }

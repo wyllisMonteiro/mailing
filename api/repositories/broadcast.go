@@ -1,36 +1,29 @@
 package repositories
 
 import (
+	"strconv"
 	"fmt"
 	"net/http"
 	"github.com/wyllisMonteiro/mailing/api/config"
 	"github.com/wyllisMonteiro/mailing/api/service"
 )
 
-type BroadcastResponse struct {
-	ID   int    `json:"id"`
-  	Name string `json:"name"`
-  	Description string `json:"description"`
-  	Subscribers SubscriberResponse
+type Broadcasts struct {
+	ID string `json:"id"`
+	Name   string `json:"name"`
+	Description string `json:"description"`
+	Mails []string `json:"mails"`
 }
 
-type GetBroadcastRequest struct {
-  	Name string `json:"name"`
+type Broadcast struct {
+	ID string `json:"id"`
+	Name   string `json:"name"`
+	Description string `json:"description"`
+	Mail string `json:"mail"`
 }
 
-/**
-  * Get broadcast by id, name, desc
-  * 
-  * 	in :
-  *		key => field name in bdd you want to looking for
-  *		val => field value in bdd
-  *
-  * 	out :
-  * 	BroadcastResponse => data about broadcast
-  *		error	
-  */
-func BroadcastFindBy(key string, val string) (BroadcastResponse, error) {
-	var broadResponse BroadcastResponse
+func BroadcastFindBy(key string, val string) (Broadcast, error) {
+	var broadResponse Broadcast
 
 	db, err := config.ConnectToBDD()
 	
@@ -50,122 +43,93 @@ func BroadcastFindBy(key string, val string) (BroadcastResponse, error) {
 	return broadResponse, nil
 }
 
-/**
-  * Get broadcast name with subscribers
-  * 
-  * 	in :
-  *		name => broadcast name
-  *
-  * 	out :
-  * 	BroadcastResponse => data about broadcast
-  *		error	
-  */
-func BroadcastFindWithSubs(name string) (BroadcastResponse, error) {
-	var broadResponse BroadcastResponse
+func BroadcastFindWithSubs(name string) (Broadcasts, error) {
+	var broadsResponse Broadcasts
+	var broadResponse Broadcast
 
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	if err != nil {
-		return broadResponse, err
+		return broadsResponse, err
 	}	
 	
-	selectFields 	:= "broadcast.id, broadcast.name, broadcast.description, subscriber.id, subscriber.mail, subscriber.name"
+	selectFields 	:= "broadcast.id, broadcast.name, broadcast.description, subscriber.mail"
 	fromTable 		:= "broadcast, broadcast_subscriber, subscriber"
-	where 				:= "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
+	where 			:= "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
 	
-	err = db.QueryRow("SELECT " + selectFields + " FROM " + fromTable + " WHERE " + where, 
-										name).Scan(&broadResponse.ID,
-															 &broadResponse.Name,
-															 &broadResponse.Description,
-															 &broadResponse.Subscribers.ID,
-															 &broadResponse.Subscribers.Mail,
-															 &broadResponse.Subscribers.Name)
-	
+	results, err := db.Query("SELECT " + selectFields + " FROM " + fromTable + " WHERE " + where, name)
 	if err != nil {
-		return broadResponse, err
+		fmt.Println(err.Error())
+		return broadsResponse, err
 	}
 
-	return broadResponse, nil
+	for results.Next() {
+        err = results.Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description, &broadResponse.Mail)
+        if err != nil {
+            fmt.Println(err.Error())
+		}
+		
+		broadsResponse.Mails = append(broadsResponse.Mails, broadResponse.Mail)
+	}
+	
+	broadsResponse.ID = broadResponse.ID
+	broadsResponse.Name = broadResponse.Name
+	broadsResponse.Description = broadResponse.Description
+
+	return broadsResponse, nil
 }
 
-type CreateBroadcastRequest struct {
-	ID int64
-	Name   string
-	Description string
-	Mails []string
-}
-
-/**
-  * Create broadcast
-  * 
-  * 	in :
-  *		w => ResponseWriter
-  * 	createBroadcastRequest => params request
-  */
-func CreateBroadcast(w http.ResponseWriter, createBroadcastRequest CreateBroadcastRequest) {
+func CreateBroadcast(createBroadcastRequest Broadcasts) (Broadcasts, error) {
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	res, err := db.Exec("INSERT `broadcast`(`name`, `description`) VALUES (?, ?)", createBroadcastRequest.Name, createBroadcastRequest.Description)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion n'a pas été effectué")
-		return 
+		return createBroadcastRequest, err
 	}
 
 	broadcast_id, err := res.LastInsertId()
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mail introuvable")
-		return 
+		return createBroadcastRequest, err
 	}
 
-	createBroadcastRequest.ID = broadcast_id
+	createBroadcastRequest.ID = strconv.Itoa(int(broadcast_id))
 
 	for mailIndex := 0; mailIndex < len(createBroadcastRequest.Mails); mailIndex++ {
 		subscriber, err := SubscriberFindBy("mail", createBroadcastRequest.Mails[mailIndex])
 		if err != nil {
-			service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mail introuvable")
-			return
+			return createBroadcastRequest, err
 		}
 
 		insert, err := db.Query("INSERT INTO `broadcast_subscriber` (`broadcast_id`, `subscriber_id`) VALUES (?, ?)", broadcast_id, subscriber.ID)
 
 		if err != nil {
-			service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion n'a pas été effectué")
-			return
+			return createBroadcastRequest, err
 		}
 
 		defer insert.Close()
 	}
 
-	service.WriteJSON(w, http.StatusOK, createBroadcastRequest)
+	return createBroadcastRequest, nil
 }
 
 type SubRequest struct {
-	BroadcastName string
-	SubscriberMail string
+	BroadcastName string `json:"broadcast_name"`
+	SubscriberMail string `json:"subscriber_mail"`
 }
 
-/**
-  * Add subscriber from broadcast
-  * 
-  * 	in :
-  *		w => ResponseWriter
-  * 	SubRequest => params request
-  */
-func BroadcastAddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
+func BroadcastAddSubscriber(subRequest SubRequest) (SubRequest, error) {
 	subscriber, err := SubscriberFindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Subscriber introuvable")
-		return
+		return subRequest, err
 	}
 
 	broad, err := BroadcastFindBy("name", subRequest.BroadcastName)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Liste de diffusion introuvable")
-		return
+		return subRequest, err
 	}
 
 	db, err := config.ConnectToBDD()
@@ -173,33 +137,23 @@ func BroadcastAddSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 	insert, err := db.Query("INSERT INTO `broadcast_subscriber` (`broadcast_id`, `subscriber_id`) VALUES (?, ?)", broad.ID, subscriber.ID)
 
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, l'ajout d'un subscriber dans la liste n'a pas pu aboutir")
-		return
+		return subRequest, err
 	}
 
-	service.WriteJSON(w, http.StatusOK, subRequest)
-
 	defer insert.Close()
+
+	return subRequest, nil
 }
 
-/**
-  * Delete subscriber from broadcast
-  * 
-  * 	in :
-  *		w => ResponseWriter
-  * 	SubRequest => params request
-  */
-func BroadcastDeleteSubscriber(w http.ResponseWriter, subRequest SubRequest) {
+func BroadcastDeleteSubscriber(subRequest SubRequest) (SubRequest, error) {
 	subscriber, err := SubscriberFindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Subscriber introuvable")
-		return
+		return subRequest, err
 	}
 
 	broad, err := BroadcastFindBy("name", subRequest.BroadcastName)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Liste de diffusion introuvable")
-		return
+		return subRequest, err
 	}
 
 	db, err := config.ConnectToBDD()
@@ -207,11 +161,10 @@ func BroadcastDeleteSubscriber(w http.ResponseWriter, subRequest SubRequest) {
 	delete, err := db.Query("DELETE FROM `broadcast_subscriber` WHERE broadcast_id = ? AND subscriber_id = ?", broad.ID, subscriber.ID)
 
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la suppression d'un subscriber dans la liste n'a pas pu aboutir")
-		return		
+		return subRequest, err
 	}
 
-	service.WriteJSON(w, http.StatusOK, subRequest)
-
 	defer delete.Close()
+
+	return subRequest, nil
 }

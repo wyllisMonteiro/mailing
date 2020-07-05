@@ -5,110 +5,73 @@ import (
 	"net/http"
   "encoding/json"
   service "github.com/wyllisMonteiro/mailing/api/service"
-	repos "github.com/wyllisMonteiro/mailing/api/repositories"
+  repos "github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
-/**
-  * Broadcast controller
-  * 
-  * 	GET | POST
-  * 
-  */
-func BroadCast(w http.ResponseWriter, req *http.Request) {
-  if req.Method == "GET" {
-    GetBroadcast(w, req)
-  }
+func GetBroadcast(w http.ResponseWriter, req *http.Request) {
+
+  broadcastName := req.FormValue("name")
   
-  if req.Method == "POST" {
-    CreateBroadcast(w, req)
+  broad, err := repos.BroadcastFindWithSubs(broadcastName)
+  if err != nil {
+    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, liste de diffusion introuvable")
+    return
   }
+
+  service.WriteJSON(w, http.StatusOK, broad)
 }
 
-/**
-  * GET /broadcast
-  * 	req.body :
-  *		{
-  *	  	name   			  string
-  *		}
-  */
-  func GetBroadcast(w http.ResponseWriter, req *http.Request) {
-    var body repos.GetBroadcastRequest
-  
-    err := json.NewDecoder(req.Body).Decode(&body)
-    if err != nil {
-      fmt.Println("Error")
-    }
-  
-    broad, err := repos.BroadcastFindWithSubs(body.Name)
-    if err != nil {
-      fmt.Println(err.Error())
-      service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, liste de diffusion introuvable")
-      return
-    }
-
-    service.WriteJSON(w, http.StatusOK, broad)
-  }
-
-/**
-  * POST /broadcast
-  * 	req.body :
-  *		{
-  *	  	name   			  string
-  * 		description 	string
-  *  		mails 			[]string
-  *		}
-  */
 func CreateBroadcast(w http.ResponseWriter, req *http.Request) {
-  var body repos.CreateBroadcastRequest
+  var body repos.Broadcasts
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println("Error")
-	}
+    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue")
+    return
+  }
 
-	repos.CreateBroadcast(w, body)
+  broad, err := repos.CreateBroadcast(body)
+  if err != nil {
+    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion a échoué")
+    return
+  }
+
+  service.WriteJSON(w, http.StatusOK, broad)
 }
 
-/**
-  * Add subscriber in broadcast list
-  * 
-  * 	POST /broadcast/add/subscriber
-  * 	req.body :
-  *		{
-  *	  	broadcastName 		string
-  *			subscriberMail 		string
-  *		}
-  * 
-  */
 func AddSubscriber(w http.ResponseWriter, req *http.Request) {
 	var body repos.SubRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println("Error")
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, l'ajout d'un subscriber a échoué")
+    return
 	}
 
-	repos.BroadcastAddSubscriber(w, body)
+  subRequest, err := repos.BroadcastAddSubscriber(body)
+  if err != nil {
+    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, l'ajout d'un subscriber a échoué")
+    return
+  }
+
+	service.WriteJSON(w, http.StatusOK, subRequest)
+  
 }
 
-/**
-  * Delete subscriber in broadcast list
-  * 
-  * 	DELETE /broadcast/delete/subscriber
-  * 	req.body :
-  *		{
-  *	  	broadcastName 		string
-  *			subscriberMail 		string
-  *		}
-  * 
-  */
 func DeleteSubscriber(w http.ResponseWriter, req *http.Request) {
 	var body repos.SubRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println("Error")
-	}
+    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la supression d'un subscriber a échoué")
+    return
+  }
 
-	repos.BroadcastDeleteSubscriber(w, body)
+  subRequest, err := repos.BroadcastDeleteSubscriber(body)
+	if err != nil {
+    service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la supression d'un subscriber a échoué")
+    return
+  }
+
+	service.WriteJSON(w, http.StatusOK, subRequest)
 }

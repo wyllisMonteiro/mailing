@@ -4,69 +4,49 @@ import (
 	"github.com/wyllisMonteiro/mailing/api/config"
 )
 
-type ClientResponse struct {
+type Client struct {
     ID   int    `json:"id"`
     Mail string `json:"mail"`
     Password string `json:"password"`
     Token string `json:"token"`
 }
 
-var clientResponse ClientResponse
+func ClientFindBy(key string, val string) (Client, error) {
+	var client Client
 
-/**
-  * Get client by id, mail or password
-  * 
-  * 	in :
-  *		key => field name in bdd you want to looking for
-  *		val => field value in bdd
-  *
-  * 	out :
-  * 	ClientResponse => data about client
-  *		error	
-  */
-func ClientFindBy(key string, val string) (ClientResponse, error) {
 	db, err := config.ConnectToBDD()
 	
 	defer db.Close()
 
 	if err != nil {
-		return clientResponse, err
+		return client, err
 	}
 
-	err = db.QueryRow("SELECT id, mail, password FROM client WHERE " + key + " = ?", val).Scan(&clientResponse.ID, &clientResponse.Mail, &clientResponse.Password)
+	err = db.QueryRow("SELECT id, mail, password FROM client WHERE " + key + " = ?", val).Scan(&client.ID, &client.Mail, &client.Password)
 	
 	if err != nil {
-		return clientResponse, err
+		return client, err
 	}
 
-	return clientResponse, nil
+	return client, nil
 }
 
-/**
-  * Update token client
-  * 
-  * 	in :
-  *		token => new token
-  *		client_id => client id
-  *
-  */
-func UpdateToken(token string, client_id int) {
+func UpdateToken(token string, client_id int) (error) {
 	db, err := config.ConnectToBDD()
 
 	defer db.Close()
 
 	if err != nil {
-		return
+		return err
 	}
 
-	// perform a db.Query insert
 	update, err := db.Query("UPDATE `client` SET `token` = ? WHERE `client`.`id` = ?", token, client_id)
 
-	// if there is an error inserting, handle it
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
-	// be careful deferring Queries if you are using transactions
 	defer update.Close()
+
+	return nil
 }

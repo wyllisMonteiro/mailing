@@ -14,7 +14,7 @@ type CreateCampaignRequest struct {
 type CreateCampaignResponse struct {
 	ID int64 `json:"id"`
 	Message string `json:"message"`
-	BroadcastID int `json:"broadcast_id"`
+	BroadcastID string `json:"broadcast_id"`
 }
 
 func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignRequest) (CreateCampaignResponse, error) {
@@ -23,7 +23,6 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 
 	broad, err := BroadcastFindBy("name", createCampaignRequest.BroadcastName)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la liste de diffusion n'a pas été effectué")
 		return createCampaignResponse, err
 	}
 
@@ -33,25 +32,19 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 
 	res, err := db.Exec("INSERT `campaign`(`message`, `broadcast_id`) VALUES (?, ?)", createCampaignRequest.Message, broad.ID)
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, la création de la campagne n'a pas été effectué")
 		return createCampaignResponse, err
 	}
 
 	campaign_id, err := res.LastInsertId()
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, mail introuvable")
 		return createCampaignResponse, err
 	}
 
 	createCampaignResponse.ID = campaign_id
 	createCampaignResponse.Message = createCampaignRequest.Message
-	createCampaignResponse.BroadcastID = broad.ID
+	createCampaignResponse.BroadcastID = string(broad.ID)
 
 	return createCampaignResponse, nil
-}
-
-type GetCampaignRequest struct {
-	ID string `json:"id"`
 }
 
 func CampaignFindByID(campaignId string) (CreateCampaignResponse, error) {
