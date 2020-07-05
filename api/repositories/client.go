@@ -5,7 +5,7 @@ import (
 )
 
 type Client struct {
-    ID   int    `json:"id"`
+    ID   string    `json:"id"`
     Mail string `json:"mail"`
     Password string `json:"password"`
     Token string `json:"token"`

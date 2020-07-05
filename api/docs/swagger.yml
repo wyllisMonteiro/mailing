@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-basePath: "/v1"
+basePath: "/api/v1"
 tags:
 - name: "login"
   description: "Login client to the app"
@@ -41,7 +41,7 @@ paths:
           schema:
             type: "object"
             $ref: "#/definitions/LoginResponse"
-  /broadcast:
+  /broadcasts:
     post:
       tags:
       - "broadcast"
@@ -61,7 +61,7 @@ paths:
           schema:
             type: "object"
             $ref: "#/definitions/BroadcastResponse"
-  /broadcast/{broadcastName}:
+  /broadcasts/{broadcastName}:
     get:
       tags:
       - "broadcast"
@@ -78,8 +78,47 @@ paths:
         "200":
           schema:
             type: "object"
-            $ref: "#/definitions/GetBroadcastResponse"
-  /campaign:
+            $ref: "#/definitions/BroadcastResponse"
+  /broadcasts/subscriber:
+    post:
+      tags:
+      - "broadcast"
+      summary: "Add subscriber from a broadcast"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/BroadcastSubsciber"
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/BroadcastSubsciber"
+    delete:
+      tags:
+      - "broadcast"
+      summary: "Remove subscriber from a broadcast"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/BroadcastSubsciber"
+      responses:
+        "200":
+          schema:
+            type: "object"
+            $ref: "#/definitions/BroadcastSubsciber"
+  /campaigns:
     post:
       tags:
       - "campaign"
@@ -99,7 +138,7 @@ paths:
           schema:
             type: "object"
             $ref: "#/definitions/CampaignResponse"
-  /campaign/{id}:
+  /campaigns/{id}:
     get:
       tags:
       - "campaign"
@@ -128,21 +167,14 @@ definitions:
   LoginResponse:
     type: "object"
     properties:
+      id:
+        type: "string"
+      mail:
+        type: "string"
+      password:
+        type: "string"
       token:
         type: "string"
-  GetBroadcastResponse:
-    type: "object"
-    properties:
-      id:
-        type: "int"
-      name: 
-        type: "string"
-      description:
-        type: "string"
-      Subscribers:
-        type: "array"
-        items:
-          $ref: "#/definitions/SubscribersResponse"
   CreateBroadcast:
     type: "object"
     properties:
@@ -167,6 +199,13 @@ definitions:
         type: "array"
         items:
           type: "string"
+  BroadcastSubsciber:
+    type: "object"
+    properties:
+      broadcast_name:
+        type: "string"
+      subscriber_mail:
+        type: "string"
   CreateCampaign:
     type: "object"
     properties:
