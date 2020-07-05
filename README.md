@@ -12,6 +12,12 @@ Technologies used :
 - Create mailing database
 - Import mailing.sql file in mailing database
 
+## Run api doc
+```sh
+$ cd api
+$ swagger serve ./docs/swagger.yml
+```
+
 **Run api**
 ```sh
 $ cd api
