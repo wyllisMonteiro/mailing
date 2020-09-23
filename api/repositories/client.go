@@ -5,25 +5,24 @@ import (
 )
 
 type Client struct {
-    ID   string    `json:"id"`
-    Mail string `json:"mail"`
-    Password string `json:"password"`
-    Token string `json:"token"`
+	ID       int    `json:"id"`
+	Mail     string `json:"mail"`
+	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 
 func ClientFindBy(key string, val string) (Client, error) {
 	var client Client
 
 	db, err := config.ConnectToBDD()
-	
-	defer db.Close()
-
 	if err != nil {
 		return client, err
 	}
 
-	err = db.QueryRow("SELECT id, mail, password FROM client WHERE " + key + " = ?", val).Scan(&client.ID, &client.Mail, &client.Password)
-	
+	defer db.Close()
+
+	err = db.QueryRow("SELECT id, mail, password FROM client WHERE "+key+" = ?", val).Scan(&client.ID, &client.Mail, &client.Password)
+
 	if err != nil {
 		return client, err
 	}
@@ -31,14 +30,13 @@ func ClientFindBy(key string, val string) (Client, error) {
 	return client, nil
 }
 
-func UpdateToken(token string, client_id int) (error) {
+func UpdateToken(token string, client_id int) error {
 	db, err := config.ConnectToBDD()
-
-	defer db.Close()
-
 	if err != nil {
 		return err
 	}
+
+	defer db.Close()
 
 	update, err := db.Query("UPDATE `client` SET `token` = ? WHERE `client`.`id` = ?", token, client_id)
 

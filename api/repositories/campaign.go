@@ -2,18 +2,18 @@ package repositories
 
 import (
 	"net/http"
-	"github.com/wyllisMonteiro/mailing/api/service"
+
 	config "github.com/wyllisMonteiro/mailing/api/config"
 )
 
 type CreateCampaignRequest struct {
-  Message string `json:"message"`
-  BroadcastName string `json:"broadcastName"`
+	Message       string `json:"message"`
+	BroadcastName string `json:"broadcastName"`
 }
 
 type CreateCampaignResponse struct {
-	ID int64 `json:"id"`
-	Message string `json:"message"`
+	ID          int64  `json:"id"`
+	Message     string `json:"message"`
 	BroadcastID string `json:"broadcast_id"`
 }
 
@@ -27,7 +27,10 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 	}
 
 	db, err := config.ConnectToBDD()
-	
+	if err != nil {
+		return createCampaignResponse, err
+	}
+
 	defer db.Close()
 
 	res, err := db.Exec("INSERT `campaign`(`message`, `broadcast_id`) VALUES (?, ?)", createCampaignRequest.Message, broad.ID)
@@ -48,17 +51,20 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 }
 
 func CampaignFindByID(campaignId string) (CreateCampaignResponse, error) {
-	var createCampaignResponse CreateCampaignResponse = CreateCampaignResponse {}
+	var createCampaignResponse CreateCampaignResponse = CreateCampaignResponse{}
 
 	db, err := config.ConnectToBDD()
-	
+	if err != nil {
+		return createCampaignResponse, err
+	}
+
 	defer db.Close()
 
-	err = db.QueryRow("SELECT * FROM campaign WHERE id = ?", 
-					  campaignId).Scan(&createCampaignResponse.ID,
-									   &createCampaignResponse.Message,
-									   &createCampaignResponse.BroadcastID)
-	
+	err = db.QueryRow("SELECT * FROM campaign WHERE id = ?",
+		campaignId).Scan(&createCampaignResponse.ID,
+		&createCampaignResponse.Message,
+		&createCampaignResponse.BroadcastID)
+
 	if err != nil {
 		return createCampaignResponse, err
 	}

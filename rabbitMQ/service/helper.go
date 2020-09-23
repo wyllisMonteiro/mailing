@@ -2,13 +2,14 @@ package service
 
 import (
 	"log"
+
 	"github.com/streadway/amqp"
 	repos "github.com/wyllisMonteiro/mailing/api/repositories"
 )
 
 func FailOnError(err error, msg string) {
 	if err != nil {
-	  log.Fatalf("%s: %s", msg, err)
+		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
@@ -22,12 +23,12 @@ func ReceiveMails() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-	"hello", // name
-	false,   // durable
-	false,   // delete when unused
-	false,   // exclusive
-	false,   // no-wait
-	nil,     // arguments
+		"hello", // name
+		false,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
 	)
 	FailOnError(err, "Failed to declare a queue")
 
@@ -39,23 +40,25 @@ func ReceiveMails() {
 		false,  // no-local
 		false,  // no-wait
 		nil,    // args
-	  )
-	  FailOnError(err, "Failed to register a consumer")
-	  
-	  forever := make(chan bool)
-	  
-	  go func() {
+	)
+	FailOnError(err, "Failed to register a consumer")
+
+	forever := make(chan bool)
+
+	go func() {
 		for d := range msgs {
-			campaignId :=d.Body
-			camp, err = repos.FindByID(campaignId)
+			//campaignId := d.Body
+
+			//log.Printf(camp.Message)
+			camp, err = repos.CampaignFindByID(1)
 			if err != nil {
 				log.Printf("ERROR GET CAMPAIGN")
 			}
-
-			log.Printf(camp.Message)
+			log.Printf("Received a message: %s", camp)
+			log.Printf("Received a message: %s", d.Body)
 		}
-	  }()
-	  
-	  log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	  <-forever
+	}()
+
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	<-forever
 }

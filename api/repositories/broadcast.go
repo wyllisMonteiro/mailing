@@ -1,40 +1,39 @@
 package repositories
 
 import (
-	"strconv"
 	"fmt"
-	"net/http"
+	"strconv"
+
 	"github.com/wyllisMonteiro/mailing/api/config"
-	"github.com/wyllisMonteiro/mailing/api/service"
 )
 
 type Broadcasts struct {
-	ID string `json:"id"`
-	Name   string `json:"name"`
-	Description string `json:"description"`
-	Mails []string `json:"mails"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Mails       []string `json:"mails"`
 }
 
 type Broadcast struct {
-	ID string `json:"id"`
-	Name   string `json:"name"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
 	Description string `json:"description"`
-	Mail string `json:"mail"`
+	Mail        string `json:"mail"`
 }
 
 func BroadcastFindBy(key string, val string) (Broadcast, error) {
 	var broadResponse Broadcast
 
 	db, err := config.ConnectToBDD()
-	
-	defer db.Close()
 
 	if err != nil {
 		return broadResponse, err
 	}
 
-	err = db.QueryRow("SELECT id, name, description FROM broadcast WHERE " + key + " = ?", val).Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description)
-	
+	defer db.Close()
+
+	err = db.QueryRow("SELECT id, name, description FROM broadcast WHERE "+key+" = ?", val).Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description)
+
 	if err != nil {
 		fmt.Println(val)
 		return broadResponse, err
@@ -48,32 +47,32 @@ func BroadcastFindWithSubs(name string) (Broadcasts, error) {
 	var broadResponse Broadcast
 
 	db, err := config.ConnectToBDD()
-	
-	defer db.Close()
 
 	if err != nil {
 		return broadsResponse, err
-	}	
-	
-	selectFields 	:= "broadcast.id, broadcast.name, broadcast.description, subscriber.mail"
-	fromTable 		:= "broadcast, broadcast_subscriber, subscriber"
-	where 			:= "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
-	
-	results, err := db.Query("SELECT " + selectFields + " FROM " + fromTable + " WHERE " + where, name)
+	}
+
+	defer db.Close()
+
+	selectFields := "broadcast.id, broadcast.name, broadcast.description, subscriber.mail"
+	fromTable := "broadcast, broadcast_subscriber, subscriber"
+	where := "broadcast.name = ? AND broadcast.id = broadcast_subscriber.broadcast_id AND subscriber.id = broadcast_subscriber.subscriber_id"
+
+	results, err := db.Query("SELECT "+selectFields+" FROM "+fromTable+" WHERE "+where, name)
 	if err != nil {
 		fmt.Println(err.Error())
 		return broadsResponse, err
 	}
 
 	for results.Next() {
-        err = results.Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description, &broadResponse.Mail)
-        if err != nil {
-            fmt.Println(err.Error())
+		err = results.Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description, &broadResponse.Mail)
+		if err != nil {
+			fmt.Println(err.Error())
 		}
-		
+
 		broadsResponse.Mails = append(broadsResponse.Mails, broadResponse.Mail)
 	}
-	
+
 	broadsResponse.ID = broadResponse.ID
 	broadsResponse.Name = broadResponse.Name
 	broadsResponse.Description = broadResponse.Description
@@ -83,7 +82,10 @@ func BroadcastFindWithSubs(name string) (Broadcasts, error) {
 
 func CreateBroadcast(createBroadcastRequest Broadcasts) (Broadcasts, error) {
 	db, err := config.ConnectToBDD()
-	
+	if err != nil {
+		return createBroadcastRequest, err
+	}
+
 	defer db.Close()
 
 	res, err := db.Exec("INSERT `broadcast`(`name`, `description`) VALUES (?, ?)", createBroadcastRequest.Name, createBroadcastRequest.Description)
@@ -117,7 +119,7 @@ func CreateBroadcast(createBroadcastRequest Broadcasts) (Broadcasts, error) {
 }
 
 type SubRequest struct {
-	BroadcastName string `json:"broadcast_name"`
+	BroadcastName  string `json:"broadcast_name"`
 	SubscriberMail string `json:"subscriber_mail"`
 }
 
@@ -133,6 +135,9 @@ func BroadcastAddSubscriber(subRequest SubRequest) (SubRequest, error) {
 	}
 
 	db, err := config.ConnectToBDD()
+	if err != nil {
+		return subRequest, err
+	}
 
 	insert, err := db.Query("INSERT INTO `broadcast_subscriber` (`broadcast_id`, `subscriber_id`) VALUES (?, ?)", broad.ID, subscriber.ID)
 
@@ -157,6 +162,9 @@ func BroadcastDeleteSubscriber(subRequest SubRequest) (SubRequest, error) {
 	}
 
 	db, err := config.ConnectToBDD()
+	if err != nil {
+		return subRequest, err
+	}
 
 	delete, err := db.Query("DELETE FROM `broadcast_subscriber` WHERE broadcast_id = ? AND subscriber_id = ?", broad.ID, subscriber.ID)
 

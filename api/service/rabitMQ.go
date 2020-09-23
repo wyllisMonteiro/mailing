@@ -2,13 +2,13 @@ package service
 
 import (
 	"log"
-	"strconv"
+
 	"github.com/streadway/amqp"
 )
 
 func FailOnError(err error, msg string) {
 	if err != nil {
-	  log.Fatalf("%s: %s", msg, err)
+		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
@@ -28,18 +28,18 @@ func SendIdCampaign(idCampaign int64) {
 		false,   // exclusive
 		false,   // no-wait
 		nil,     // arguments
-	  )
-	  FailOnError(err, "Failed to declare a queue")
+	)
+	FailOnError(err, "Failed to declare a queue")
 
-	  body := strconv.FormatInt(idCampaign, 10)
-	  err = ch.Publish(
+	body := "1"
+	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
 		false,  // mandatory
 		false,  // immediate
-		amqp.Publishing {
-		  ContentType: "text/plain",
-		  Body:        []byte(body),
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(body),
 		})
-		FailOnError(err, "Failed to publish a message")
+	FailOnError(err, "Failed to publish a message")
 }
