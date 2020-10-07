@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	repo "github.com/wyllisMonteiro/mailing/api/repositories"
-	"github.com/wyllisMonteiro/mailing/api/service"
+	repo "github.com/wyllisMonteiro/mailing/repositories"
+	"github.com/wyllisMonteiro/mailing/service"
 )
 
+// Login : Return JSON of user logged or error
 func Login(w http.ResponseWriter, req *http.Request) {
-	service.SendIdCampaign(20)
-
 	var body repo.Client
 
 	err := json.NewDecoder(req.Body).Decode(&body)

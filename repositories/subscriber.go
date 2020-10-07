@@ -1,26 +1,17 @@
 package repositories
 
 import (
-	"github.com/wyllisMonteiro/mailing/api/config"
+	"github.com/wyllisMonteiro/mailing/config"
 )
 
+// SubscriberResponse : Structure format in db
 type SubscriberResponse struct {
 	ID   int    `json:"id"`
 	Mail string `json:"mail"`
 	Name string `json:"name"`
 }
 
-/**
- * Get subscriber by id, mail or name
- *
- * 	in :
- *		key => field name in bdd you want to looking for
- *		val => field value in bdd
- *
- * 	out :
- * 	SubscriberResponse => data about subscriber
- *		error
- */
+// SubscriberFindBy : Get subscriber according to params
 func SubscriberFindBy(key string, val string) (SubscriberResponse, error) {
 	var sub SubscriberResponse
 
@@ -38,8 +29,4 @@ func SubscriberFindBy(key string, val string) (SubscriberResponse, error) {
 	}
 
 	return sub, nil
-}
-
-func Add(val1 int, val2 int) int {
-	return val1 + val2
 }

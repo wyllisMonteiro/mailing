@@ -1,9 +1,10 @@
 package repositories
 
 import (
-	"github.com/wyllisMonteiro/mailing/api/config"
+	"github.com/wyllisMonteiro/mailing/config"
 )
 
+// Client : Structure format in db
 type Client struct {
 	ID       int    `json:"id"`
 	Mail     string `json:"mail"`
@@ -11,6 +12,7 @@ type Client struct {
 	Token    string `json:"token"`
 }
 
+// ClientFindBy : Get client according to params and return client
 func ClientFindBy(key string, val string) (Client, error) {
 	var client Client
 
@@ -30,6 +32,7 @@ func ClientFindBy(key string, val string) (Client, error) {
 	return client, nil
 }
 
+// UpdateToken : update token client
 func UpdateToken(token string, client_id int) error {
 	db, err := config.ConnectToBDD()
 	if err != nil {

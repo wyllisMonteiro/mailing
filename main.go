@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/wyllisMonteiro/mailing/api/router"
+
+	"github.com/wyllisMonteiro/mailing/router"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 
 var USER_DB = "root"
 var PASS_DB = "root"
-var IP_DB = "127.0.0.1:3306"
+var IP_DB = "db:3306"
 var NAME_DB = "mailing"
 
 func ConnectToBDD() (*sql.DB, error) {

@@ -2,11 +2,13 @@ package repositories
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
-	"github.com/wyllisMonteiro/mailing/api/config"
+	"github.com/wyllisMonteiro/mailing/config"
 )
 
+// Broadcasts : Structure format
 type Broadcasts struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
@@ -14,6 +16,7 @@ type Broadcasts struct {
 	Mails       []string `json:"mails"`
 }
 
+// Broadcast : Structure format in db
 type Broadcast struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
@@ -21,6 +24,7 @@ type Broadcast struct {
 	Mail        string `json:"mail"`
 }
 
+// BroadcastFindBy : return broadcast according to params function
 func BroadcastFindBy(key string, val string) (Broadcast, error) {
 	var broadResponse Broadcast
 
@@ -35,13 +39,14 @@ func BroadcastFindBy(key string, val string) (Broadcast, error) {
 	err = db.QueryRow("SELECT id, name, description FROM broadcast WHERE "+key+" = ?", val).Scan(&broadResponse.ID, &broadResponse.Name, &broadResponse.Description)
 
 	if err != nil {
-		fmt.Println(val)
+		log.Println(err)
 		return broadResponse, err
 	}
 
 	return broadResponse, nil
 }
 
+// BroadcastFindWithSubs : return broadcast with subscriber mail
 func BroadcastFindWithSubs(name string) (Broadcasts, error) {
 	var broadsResponse Broadcasts
 	var broadResponse Broadcast
@@ -80,6 +85,7 @@ func BroadcastFindWithSubs(name string) (Broadcasts, error) {
 	return broadsResponse, nil
 }
 
+// CreateBroadcast : Create broadcast and return broadcast created
 func CreateBroadcast(createBroadcastRequest Broadcasts) (Broadcasts, error) {
 	db, err := config.ConnectToBDD()
 	if err != nil {
@@ -118,11 +124,13 @@ func CreateBroadcast(createBroadcastRequest Broadcasts) (Broadcasts, error) {
 	return createBroadcastRequest, nil
 }
 
+// SubRequest : Structure format of request
 type SubRequest struct {
 	BroadcastName  string `json:"broadcast_name"`
 	SubscriberMail string `json:"subscriber_mail"`
 }
 
+// BroadcastAddSubscriber : Add subscriber to broadcast and return request called
 func BroadcastAddSubscriber(subRequest SubRequest) (SubRequest, error) {
 	subscriber, err := SubscriberFindBy("mail", subRequest.SubscriberMail)
 	if err != nil {
@@ -150,6 +158,7 @@ func BroadcastAddSubscriber(subRequest SubRequest) (SubRequest, error) {
 	return subRequest, nil
 }
 
+// BroadcastDeleteSubscriber : delete subscriber to broadcast and return request called
 func BroadcastDeleteSubscriber(subRequest SubRequest) (SubRequest, error) {
 	subscriber, err := SubscriberFindBy("mail", subRequest.SubscriberMail)
 	if err != nil {

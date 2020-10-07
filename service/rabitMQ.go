@@ -1,19 +1,24 @@
 package service
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/streadway/amqp"
 )
 
+// FailOnError : show error
 func FailOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
-func SendIdCampaign(idCampaign int64) {
+// SendIDCampaign : Send ID campaign to RabbitMQ
+func SendIDCampaign(idCampaign int64) {
+	fmt.Println(5555)
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	fmt.Println(6666)
 	FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 

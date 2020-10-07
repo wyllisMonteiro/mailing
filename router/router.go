@@ -2,11 +2,13 @@ package router
 
 import (
 	"log"
-	"github.com/wyllisMonteiro/mailing/api/controllers"
 	"net/http"
+
 	"github.com/gorilla/mux"
+	"github.com/wyllisMonteiro/mailing/controllers"
 )
 
+// InitRoutes : Load controller (handler)
 func InitRoutes() {
 	r := mux.NewRouter()
 	r.HandleFunc("/login", controllers.Login).Methods("POST")

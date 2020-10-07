@@ -6,10 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	repo "github.com/wyllisMonteiro/mailing/api/repositories"
-	service "github.com/wyllisMonteiro/mailing/api/service"
+	repo "github.com/wyllisMonteiro/mailing/repositories"
+	service "github.com/wyllisMonteiro/mailing/service"
 )
 
+// GetCampaign : Return JSON of a campaign or error
 func GetCampaign(w http.ResponseWriter, req *http.Request) {
 
 	urlParams := mux.Vars(req)
@@ -20,11 +21,12 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//service.SendIdCampaign(createCampaign.ID)
+	//service.SendIDCampaign(createCampaign.ID)
 	service.WriteJSON(w, http.StatusOK, getCampaign)
 
 }
 
+// CreateCampaign : Return JSON of created campaign or error
 func CreateCampaign(w http.ResponseWriter, req *http.Request) {
 	var body repo.CreateCampaignRequest
 
@@ -40,6 +42,7 @@ func CreateCampaign(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//service.SendIdCampaign(createCampaign.ID)
+	service.SendIDCampaign(createCampaign.ID)
+
 	service.WriteJSON(w, http.StatusOK, createCampaign)
 }

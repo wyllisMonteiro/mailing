@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	repos "github.com/wyllisMonteiro/mailing/api/repositories"
-	service "github.com/wyllisMonteiro/mailing/api/service"
+	repos "github.com/wyllisMonteiro/mailing/repositories"
+	service "github.com/wyllisMonteiro/mailing/service"
 )
 
+// GetBroadcast : Return JSON of all broadcast or error
 func GetBroadcast(w http.ResponseWriter, req *http.Request) {
 
 	broadcastName := req.FormValue("name")
@@ -21,6 +22,7 @@ func GetBroadcast(w http.ResponseWriter, req *http.Request) {
 	service.WriteJSON(w, http.StatusOK, broad)
 }
 
+// CreateBroadcast : Return JSON of created broadcast or error
 func CreateBroadcast(w http.ResponseWriter, req *http.Request) {
 	var body repos.Broadcasts
 
@@ -39,6 +41,7 @@ func CreateBroadcast(w http.ResponseWriter, req *http.Request) {
 	service.WriteJSON(w, http.StatusOK, broad)
 }
 
+// AddSubscriber : Return JSON of added subscriber to broadcast or error
 func AddSubscriber(w http.ResponseWriter, req *http.Request) {
 	var body repos.SubRequest
 
@@ -58,6 +61,7 @@ func AddSubscriber(w http.ResponseWriter, req *http.Request) {
 
 }
 
+// DeleteSubscriber : Return JSON of deleted subscriber to broadcast or error
 func DeleteSubscriber(w http.ResponseWriter, req *http.Request) {
 	var body repos.SubRequest
 
