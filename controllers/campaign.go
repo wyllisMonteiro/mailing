@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,6 +13,8 @@ import (
 // GetCampaign : Return JSON of a campaign or error
 func GetCampaign(w http.ResponseWriter, req *http.Request) {
 
+	fmt.Println("c le début le sang")
+
 	urlParams := mux.Vars(req)
 
 	getCampaign, err := models.CampaignFindByID(urlParams["id"])
@@ -20,7 +23,8 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//service.SendIDCampaign(createCampaign.ID)
+	fmt.Println("J'envoie l'id le sang")
+	service.SendIDCampaign(getCampaign.ID)
 	service.WriteJSON(w, http.StatusOK, getCampaign)
 
 }

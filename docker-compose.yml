@@ -18,6 +18,8 @@ services:
       MYSQL_PASSWORD: ${PASSDB}
     ports:
       - "3306:3306"
+    networks:
+      - stack
 
   app:
     depends_on:
@@ -26,6 +28,12 @@ services:
     ports: 
       - "9000:9000"
     build: .
+    networks:
+      - stack
 
 volumes:
   db-data:
+
+networks:
+  stack:
+    external: true

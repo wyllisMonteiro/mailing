@@ -17,7 +17,7 @@ func FailOnError(err error, msg string) {
 // SendIDCampaign : Send ID campaign to RabbitMQ
 func SendIDCampaign(idCampaign int64) {
 	fmt.Println(5555)
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@rabbit:5672/")
 	fmt.Println(6666)
 	FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
