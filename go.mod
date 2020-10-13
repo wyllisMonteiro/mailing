@@ -21,6 +21,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jmank88/nuts v0.4.0 // indirect
+	github.com/joho/godotenv v1.3.0
 	github.com/nightlyone/lockfile v1.0.0 // indirect
 	github.com/sdboyer/constext v0.0.0-20170321163424-836a14457353 // indirect
 	github.com/spf13/afero v1.3.1 // indirect

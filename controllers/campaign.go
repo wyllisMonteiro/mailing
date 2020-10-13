@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	repo "github.com/wyllisMonteiro/mailing/repositories"
+	"github.com/wyllisMonteiro/mailing/models"
 	service "github.com/wyllisMonteiro/mailing/service"
 )
 
@@ -15,9 +14,9 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
 
 	urlParams := mux.Vars(req)
 
-	getCampaign, err := repo.CampaignFindByID(urlParams["id"])
+	getCampaign, err := models.CampaignFindByID(urlParams["id"])
 	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de récupérer la campagne")
 		return
 	}
 
@@ -28,15 +27,15 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
 
 // CreateCampaign : Return JSON of created campaign or error
 func CreateCampaign(w http.ResponseWriter, req *http.Request) {
-	var body repo.CreateCampaignRequest
+	var body models.CreateCampaignRequest
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println("Error")
+		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
 		return
 	}
 
-	createCampaign, err := repo.CreateCampaign(w, body)
+	createCampaign, err := models.CreateCampaign(w, body)
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de créer la campagne")
 		return
