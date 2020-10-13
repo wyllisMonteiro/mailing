@@ -5,33 +5,37 @@ Technologies used :
 - JWT
 
 ## Set up project
+Set up variable environnement
 
-- Go in api folder
-- Go in main.go file
-- Check config in api/config
-- Create mailing database
-- Import mailing.sql file in mailing database
+Create a .env file and add following vars with your data
 
-## Run api doc
-```sh
-$ cd api
-$ swagger serve ./docs/swagger.yml
+```
+USERDB=root
+PASSDB=root
+IPDB=db:3306
+NAMEDB=mailing
 ```
 
-**Run api**
 ```sh
-$ cd api
-$ go run main.go
+$ docker-compose up --build
 ```
 
-## Project architecture
-![tree](assets/tree_mailing.png)
+Replace "root" (it's username) and "root" (it's password) by your own login
 
-- config allow you to manage project (database connexion)
-- router contains all routes
-- controllers is **JUST** function called in router
-- service allow you to make operations like token generation, hash ...
-- repositories allow you to make operation with database (GET, POST, PUT, DELETE ...)
+```sh
+$ docker exec -i db sh -c 'exec mysql -uroot -p"root"' < ./migrations/mailing.sql
+```
+
+Check API host
+```sh
+$ docker ps
+```
+
+## API DOC
+Coming soon
+
+## Unit tests
+Coming soon
 
 Tutorial for authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
 Tutorial for database : https://tutorialedge.net/golang/golang-mysql-tutorial/
