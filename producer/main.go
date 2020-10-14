@@ -9,6 +9,7 @@ import (
 	"github.com/wyllisMonteiro/mailing/router"
 )
 
+// Start API
 func main() {
 	r := mux.NewRouter()
 	router.InitRoutes(r)
