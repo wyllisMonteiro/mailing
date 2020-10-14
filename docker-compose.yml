@@ -1,13 +1,39 @@
-version: "3"
+version: "3.8"
 
 services:
   #swagger:
   #  build:
   #    context: ./api
   #    dockerfile: Dockerfile
-  rabit:
-    container_name: rabitmq
-    image: rabbitmq:3-management
+  db:
+    container_name: db
+    image: mysql:5.7
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${NAMEDB}
+      MYSQL_USER: ${USERDB}
+      MYSQL_PASSWORD: ${PASSDB}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "3306:3306"
+    networks:
+      - stack
+
+  app:
+    depends_on:
+      - db
+    container_name: api
+    ports: 
+      - "9000:9000"
+    build: .
+    networks:
+      - stack
+
+volumes:
+  db-data:
+
+networks:
+  stack:
+    external: true
