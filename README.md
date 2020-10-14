@@ -1,19 +1,31 @@
-# Creation of API using JWT
+# Mailing
 
 Technologies used :
 - Golang
 - JWT
+- RabbitMQ
+- Rest
 
 ## Set up project
-Set up variable environnement
+Set up environment variables
 
 Create a .env file and add following vars with your data
+
+First there are vars for db
+Then vars for RabbitMQ
 
 ```
 USERDB=root
 PASSDB=root
 IPDB=db:3306
 NAMEDB=mailing
+
+HOSTMAIL=smtp.mailtrap.io
+PORTMAIL=587
+USERMAIL=ed8a72da8c6188
+PASSMAIL=595bc17392bcb0
+FROMMAIL=353cbdd366-e809e4@inbox.mailtrap.io
+TOMAIL=353cbdd366-e809e4@inbox.mailtrap.io
 ```
 
 ```sh
@@ -78,8 +90,16 @@ DELETE   /broadcasts/subscriber
 ```
 
 ## Unit tests
-Coming soon
+You have to add your unit tests by using `_test` suffix for example `auth_test.go`allow us to test `auth.go` file
+
+## Next Step
+- Add all unit tests
+- Make some refactoring
+- Include token in each request
+- Add some routes like DELETE /broadcast/{id}, POST /client
 
 Tutorial for authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
+
 Tutorial for database : https://tutorialedge.net/golang/golang-mysql-tutorial/
+
 Tutorial for hash : https://www.alexedwards.net/blog/how-to-hash-and-verify-passwords-with-argon2-in-go
