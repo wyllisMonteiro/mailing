@@ -57,6 +57,8 @@ func CampaignFindByID(campaignID int) (CreateCampaignResponse, error) {
 		&createCampaignResponse.BroadcastID)
 
 	if err != nil {
+
+		fmt.Println(err)
 		return createCampaignResponse, err
 	}
 
