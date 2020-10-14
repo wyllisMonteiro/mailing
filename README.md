@@ -100,6 +100,6 @@ You have to add your unit tests by using `_test` suffix for example `auth_test.g
 
 ## Tutorials sources
 
-Authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
-DB use & creation : https://tutorialedge.net/golang/golang-mysql-tutorial/
-Hashing : https://www.alexedwards.net/blog/how-to-hash-and-verify-passwords-with-argon2-in-go
+Authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s  
+DB use & creation : https://tutorialedge.net/golang/golang-mysql-tutorial/  
+Hashing : https://www.alexedwards.net/blog/how-to-hash-and-verify-passwords-with-argon2-in-go  
