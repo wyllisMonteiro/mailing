@@ -63,10 +63,8 @@ func ConnectToBDD() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", userDB, passDB, ipDB, nameDB)
 	DB, err = sql.Open("mysql", dsn)
-	fmt.Println("pas d'erreur")
 
 	if err != nil {
-		fmt.Println("voici l'erreur")
 		log.Println(err)
 	}
 }

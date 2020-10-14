@@ -1,10 +1,6 @@
 version: "3.8"
 
 services:
-  #swagger:
-  #  build:
-  #    context: ./api
-  #    dockerfile: Dockerfile
   db:
     container_name: db
     image: mysql:5.7
@@ -18,22 +14,54 @@ services:
       MYSQL_PASSWORD: ${PASSDB}
     ports:
       - "3306:3306"
-    networks:
-      - stack
+    networks: 
+      - backend
 
   app:
     depends_on:
       - db
+      - rabbit
     container_name: api
     ports: 
       - "9000:9000"
-    build: .
-    networks:
-      - stack
+    restart: on-failure
+    build: 
+      context: ./
+      dockerfile: docker/Dockerfile-api
+    networks: 
+      - backend
+  
+  rabbit:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    # healthcheck:
+    #   test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+    #   interval: 5s
+    #   timeout: 15s
+    #   retries: 1
+    networks: 
+      - backend
+    
+  consumer:
+    depends_on:
+      - db
+      - rabbit
+    restart: on-failure
+    container_name: consumer
+    build: 
+      context: ./
+      dockerfile: docker/Dockerfile-consumer
+    ports:
+      - "9001:9000"
+    networks: 
+      - backend
 
 volumes:
   db-data:
 
 networks:
-  stack:
-    external: true
+  backend:
+    driver: "bridge"

@@ -2,16 +2,19 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/wyllisMonteiro/mailing/models"
-	service "github.com/wyllisMonteiro/mailing/service"
+	"github.com/wyllisMonteiro/mailing/service"
 )
 
 // GetCampaign : Return JSON of a campaign or error
 func GetCampaign(w http.ResponseWriter, req *http.Request) {
+
+	fmt.Println("On est dans le controller")
 
 	urlParams := mux.Vars(req)
 	id, err := strconv.Atoi(urlParams["id"])
@@ -27,6 +30,7 @@ func GetCampaign(w http.ResponseWriter, req *http.Request) {
 	}
 
 	service.SendIDCampaign(getCampaign.ID)
+
 	service.WriteJSON(w, http.StatusOK, getCampaign)
 
 }
