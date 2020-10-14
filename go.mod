@@ -28,7 +28,7 @@ require (
 	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14 // indirect
 	github.com/swaggo/gin-swagger v1.2.0 // indirect
-	github.com/wyllisMonteiro/mailing v0.0.2 // indirect
+	github.com/wyllisMonteiro/mailing/api v0.0.0-20200625155400-a036cafee65b // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
