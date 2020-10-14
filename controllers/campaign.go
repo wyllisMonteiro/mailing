@@ -2,26 +2,17 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
-
 	"github.com/gorilla/mux"
 	"github.com/wyllisMonteiro/mailing/models"
 	service "github.com/wyllisMonteiro/mailing/service"
+	"net/http"
 )
 
 // GetCampaign : Return JSON of a campaign or error
 func GetCampaign(w http.ResponseWriter, req *http.Request) {
 
 	urlParams := mux.Vars(req)
-	id, err := strconv.Atoi(urlParams["id"])
-
-	if err != nil {
-		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue : l'id de la campagne pose problème")
-		return
-	}
-
-	getCampaign, err := models.CampaignFindByID(id)
+	getCampaign, err := models.CampaignFindByID(urlParams["id"])
 	if err != nil {
 		service.WriteErrorJSON(w, http.StatusInternalServerError, "Une erreur est survenue, Impossible de récupérer la campagne")
 		return
