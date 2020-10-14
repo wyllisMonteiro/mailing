@@ -98,8 +98,8 @@ You have to add your unit tests by using `_test` suffix for example `auth_test.g
 - Include token in each request
 - Add some routes like DELETE /broadcast/{id}, POST /client
 
-Tutorial for authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
+## Tutorials sources
 
-Tutorial for database : https://tutorialedge.net/golang/golang-mysql-tutorial/
-
-Tutorial for hash : https://www.alexedwards.net/blog/how-to-hash-and-verify-passwords-with-argon2-in-go
+Authentification : https://www.youtube.com/watch?v=-Scg9INymBs&t=906s
+DB use & creation : https://tutorialedge.net/golang/golang-mysql-tutorial/
+Hashing : https://www.alexedwards.net/blog/how-to-hash-and-verify-passwords-with-argon2-in-go
