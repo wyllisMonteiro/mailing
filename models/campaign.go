@@ -48,7 +48,7 @@ func CreateCampaign(w http.ResponseWriter, createCampaignRequest CreateCampaignR
 }
 
 // CampaignFindByID : Get campaign according to ID and return campaign
-func CampaignFindByID(campaignID string) (CreateCampaignResponse, error) {
+func CampaignFindByID(campaignID int) (CreateCampaignResponse, error) {
 	var createCampaignResponse CreateCampaignResponse = CreateCampaignResponse{}
 
 	err := DB.QueryRow("SELECT * FROM campaign WHERE id = ?",
@@ -57,6 +57,8 @@ func CampaignFindByID(campaignID string) (CreateCampaignResponse, error) {
 		&createCampaignResponse.BroadcastID)
 
 	if err != nil {
+
+		fmt.Println(err)
 		return createCampaignResponse, err
 	}
 

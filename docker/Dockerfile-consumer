@@ -18,7 +18,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN go build -o main .
+RUN go build -o main ./consumer
 
 # Move to /dist directory as the place for resulting binary folder
 WORKDIR /dist
@@ -29,7 +29,7 @@ RUN cp /build/main .
 RUN cp /build/.env .
 
 # Export necessary port
-EXPOSE 9000
+EXPOSE 9001
 
 # Command to run when starting the container
 CMD ["/dist/main"]

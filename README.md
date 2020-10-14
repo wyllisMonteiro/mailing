@@ -31,8 +31,51 @@ Check API host
 $ docker ps
 ```
 
-## API DOC
-Coming soon
+
+## API Routes
+
+
+	r.HandleFunc("/campaigns", controllers.CreateCampaign).Methods("POST")
+	r.HandleFunc("/campaigns/{id}", controllers.GetCampaign).Methods("GET")
+	r.HandleFunc("/broadcasts", controllers.CreateBroadcast).Methods("POST")
+	r.HandleFunc("/broadcasts", controllers.GetBroadcast).Queries("name", "{name}").Methods("GET")
+	r.HandleFunc("/broadcasts/subscriber", controllers.AddSubscriber).Methods("POST")
+	r.HandleFunc("/broadcasts/subscriber", controllers.DeleteSubscriber).Methods("DELETE")
+
+```
+Login route
+POST   /api/login
+```
+
+```
+Add a new campaign
+POST   /api/campaigns
+```
+
+```
+Get a specific campaign
+GET    /api/campaigns/{id}
+```
+
+```
+Add a new broadcast
+POST    /api/broadcasts              
+```
+
+```
+Get a specific broadcast (by name)
+GET    /api/broadcasts/{name}
+```
+
+```http
+Add a new subscriber
+POST    /broadcasts/subscriber       
+```
+
+```http
+Delete a subscriber
+DELETE   /broadcasts/subscriber        
+```
 
 ## Unit tests
 Coming soon
